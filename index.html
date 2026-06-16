@@ -212,6 +212,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #10B981; display: inline-block; margin-right: 4px; }
 .sync-dot.syncing { background: #F59E0B; animation: pulse .8s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── VIEW TABS ────────────────────────────────────────────────────────────── */
+.view-tabs { background: #fff; border-bottom: 1px solid #E5E7EB; padding: 0 32px; display: flex; gap: 0; }
+.view-tab { padding: 12px 20px; font-size: 13px; font-weight: 500; color: #6B7280; cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; font-family: inherit; transition: all .15s; display: flex; align-items: center; gap: 7px; }
+.view-tab:hover { color: #374151; }
+.view-tab.active { color: #111827; border-bottom-color: #3B82F6; font-weight: 600; }
+.miro-container { height: calc(100vh - 180px); background: #f0f2f5; padding: 0; display: none; }
+.miro-container iframe { width: 100%; height: 100%; border: none; display: block; }
 </style>
 </head>
 <body>
@@ -314,13 +322,27 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <button class="tool-btn" onclick="openAdmin()" id="btn-admin" style="display:none">👥 Manage Users</button>
   </div>
 
-  <div class="board-title-row">
-    <div><h2>Swimlane View — Phases 1–7</h2><p id="board-hint">Click any card to view details</p></div>
-    <div style="font-size:12px;color:#9CA3AF" id="sync-label"></div>
+  <div class="view-tabs">
+    <button class="view-tab active" id="tab-board" onclick="switchTab('board')">📋 Onboarding Board</button>
+    <button class="view-tab" id="tab-miro" onclick="switchTab('miro')">🗂 Miro Reference</button>
   </div>
 
-  <div class="board">
-    <div class="board-inner" id="board"></div>
+  <div id="view-board">
+    <div class="board-title-row">
+      <div><h2>Swimlane View — Phases 1–7</h2><p id="board-hint">Click any card to view details</p></div>
+      <div style="font-size:12px;color:#9CA3AF" id="sync-label"></div>
+    </div>
+    <div class="board">
+      <div class="board-inner" id="board"></div>
+    </div>
+  </div>
+
+  <div class="miro-container" id="view-miro">
+    <iframe
+      src="https://miro.com/app/live-embed/uXjVOtqtRgw=/?embedMode=view_only_without_ui&moveToViewport=-6106,-2888,11884,5582&embedId=816369302836"
+      allow="fullscreen; clipboard-read; clipboard-write"
+      allowfullscreen>
+    </iframe>
   </div>
 </div>
 
@@ -1101,6 +1123,18 @@ function toast(msg) {
   el.textContent = msg; el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TAB SWITCHER
+// ═══════════════════════════════════════════════════════════════════════════
+function switchTab(name) {
+  document.getElementById('view-board').style.display = name === 'board' ? '' : 'none';
+  document.getElementById('view-miro').style.display  = name === 'miro'  ? 'block' : 'none';
+  document.getElementById('tab-board').classList.toggle('active', name === 'board');
+  document.getElementById('tab-miro').classList.toggle('active',  name === 'miro');
+  // hide board-specific toolbar when on Miro tab
+  document.querySelector('.toolbar').style.display = name === 'board' ? '' : 'none';
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
