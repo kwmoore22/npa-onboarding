@@ -124,6 +124,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .phase-cell.drag-over { background: #EFF6FF; outline: 2px dashed #3B82F6; outline-offset: -2px; }
 .add-card-btn { width: 100%; padding: 5px; margin-top: 4px; border: 1px dashed #D1D5DB; border-radius: 6px; background: transparent; color: #9CA3AF; font-size: 11px; cursor: pointer; text-align: center; transition: all .15s; }
 .add-card-btn:hover { border-color: #3B82F6; color: #3B82F6; background: #EFF6FF; }
+.activate-btn { width: 100%; padding: 6px; border: 1px dashed #D1D5DB; border-radius: 6px; background: transparent; color: #9CA3AF; font-size: 11px; cursor: pointer; text-align: center; transition: all .15s; }
+.activate-btn:hover { border-color: #10B981; color: #10B981; background: #ECFDF5; }
+.card-copy-btn { position: absolute; bottom: 7px; right: 7px; background: rgba(255,255,255,.85); border: 1px solid #E5E7EB; border-radius: 4px; padding: 2px 5px; font-size: 10px; cursor: pointer; color: #6B7280; opacity: 0; transition: opacity .15s; line-height: 1; z-index: 3; }
+.card:hover .card-copy-btn { opacity: 1; }
+.card-copy-btn:hover { background: #fff; color: #3B82F6; border-color: #3B82F6; }
+.dup-phase-btn { display: none; font-size: 9px; color: #6B7280; background: transparent; border: 1px solid #4B5563; border-radius: 3px; padding: 2px 5px; cursor: pointer; margin-top: 4px; transition: all .15s; }
+.phase-col-header:hover .dup-phase-btn { display: inline-block; }
+.dup-phase-btn:hover { background: #374151; color: #E5E7EB; }
 
 /* ── CARDS ────────────────────────────────────────────────────────────────── */
 .card { border-radius: 6px; padding: 9px 10px; margin-bottom: 7px; font-size: 11px; border-left: 3px solid; cursor: pointer; transition: transform .1s, box-shadow .1s; position: relative; user-select: none; }
@@ -788,6 +796,7 @@ function render() {
       <div class="phase-num">Phase ${i+1}</div>
       <div class="phase-name" contenteditable="${p.canManage}" data-editable ${ro} onblur="saveHeaderEdit(this,'name','${ph.id}')">${esc(ph.name)}</div>
       <div class="phase-days" contenteditable="${p.canManage}" data-editable ${ro} onblur="saveHeaderEdit(this,'days','${ph.id}')">${esc(ph.days)}</div>
+      ${p.canManage ? `<button class="dup-phase-btn" onclick="duplicatePhase('${ph.id}')">⧉ Duplicate Phase</button>` : ''}
     </div>`;
   });
   html += '</div>';
@@ -806,7 +815,11 @@ function render() {
       const cards    = state.cards.filter(c => c.lane === lane.id && c.phase === ph.id);
 
       if (!isActive) {
-        html += `<div class="phase-cell empty-placeholder"><span style="font-size:11px;color:#D1D5DB;">${esc(lane.name)}: ${lane.activePhases.length} phases</span></div>`;
+        html += `<div class="phase-cell empty-placeholder" data-lane="${lane.id}" data-phase="${ph.id}">
+          ${p.canManage
+            ? `<button class="activate-btn" onclick="activateCell('${lane.id}','${ph.id}')">+ Activate for ${esc(lane.name)}</button>`
+            : `<span style="font-size:11px;color:#D1D5DB;">${esc(lane.name)}: ${lane.activePhases.length} phases</span>`}
+        </div>`;
       } else {
         html += `<div class="phase-cell" data-lane="${lane.id}" data-phase="${ph.id}" ondragover="dragOver(event)" ondrop="drop(event)" ondragleave="dragLeave(event)">`;
         cards.forEach(c => { html += renderCard(c, p); });
@@ -841,6 +854,7 @@ function renderCard(card, p) {
     <div class="card-owner">👤 <span>${esc(card.owner)}</span></div>
     <div class="card-dep">🔗 ${esc(card.dep)}</div>
     <div class="card-risk">⚠ ${esc(card.risk)}</div>
+    ${p.canManage ? `<button class="card-copy-btn" onclick="event.stopPropagation();duplicateCard('${card.id}')">⧉ Copy</button>` : ''}
   </div>`;
 }
 
@@ -1123,6 +1137,62 @@ function toast(msg) {
   el.textContent = msg; el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DUPLICATE & ACTIVATE
+// ═══════════════════════════════════════════════════════════════════════════
+function duplicateCard(id) {
+  if (!perms().canManage) return;
+  const src = state.cards.find(c => c.id === id);
+  if (!src) return;
+  const copy = { ...src, id: uid(), title: src.title + ' (copy)', status: 'not-started' };
+  // insert immediately after the source card
+  const idx = state.cards.indexOf(src);
+  state.cards.splice(idx + 1, 0, copy);
+  save(); render(); toast('Card duplicated');
+}
+
+function duplicatePhase(phaseId) {
+  if (!perms().canManage) return;
+  const src = state.phases.find(p => p.id === phaseId);
+  if (!src) return;
+  const newId = 'p' + Date.now();
+  const newPhase = { id: newId, name: src.name + ' (copy)', days: src.days };
+  // insert after source phase
+  const idx = state.phases.indexOf(src);
+  state.phases.splice(idx + 1, 0, newPhase);
+  // activate in all lanes that have the source phase active
+  state.swimlanes.forEach(lane => {
+    if (lane.activePhases.includes(phaseId)) {
+      const laneIdx = lane.activePhases.indexOf(phaseId);
+      lane.activePhases.splice(laneIdx + 1, 0, newId);
+    }
+  });
+  // duplicate all cards in the source phase
+  const srcCards = state.cards.filter(c => c.phase === phaseId);
+  srcCards.forEach(c => {
+    state.cards.push({ ...c, id: uid(), phase: newId, status: 'not-started' });
+  });
+  save(); render(); toast('Phase duplicated');
+}
+
+function activateCell(laneId, phaseId) {
+  if (!perms().canManage) return;
+  const lane = state.swimlanes.find(l => l.id === laneId);
+  if (!lane || lane.activePhases.includes(phaseId)) return;
+  // insert in phase order
+  const phaseOrder = state.phases.map(p => p.id);
+  const insertBefore = phaseOrder.find(pid => pid !== phaseId && !lane.activePhases.includes(pid) === false && phaseOrder.indexOf(pid) > phaseOrder.indexOf(phaseId));
+  if (insertBefore) {
+    const idx = lane.activePhases.indexOf(insertBefore);
+    lane.activePhases.splice(idx, 0, phaseId);
+  } else {
+    lane.activePhases.push(phaseId);
+  }
+  // keep sorted by phase order
+  lane.activePhases.sort((a, b) => phaseOrder.indexOf(a) - phaseOrder.indexOf(b));
+  save(); render(); toast('Phase activated for ' + (lane.name || laneId));
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
