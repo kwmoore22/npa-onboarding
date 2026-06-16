@@ -221,6 +221,34 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .sync-dot.syncing { background: #F59E0B; animation: pulse .8s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
+/* ── RACI / LINKS / NOTES ────────────────────────────────────────────────── */
+.raci-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px; }
+.raci-cell { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 6px; padding: 6px 8px; font-size: 12px; }
+.raci-cell .raci-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #9CA3AF; display: block; margin-bottom: 2px; }
+.raci-cell .raci-value { color: #374151; font-weight: 500; }
+.raci-row { display: grid; grid-template-columns: 80px 1fr; gap: 6px; align-items: center; margin-bottom: 6px; }
+.raci-badge { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-align: center; }
+.raci-R { background: #DBEAFE; color: #1D4ED8; }
+.raci-A { background: #FEF3C7; color: #92400E; }
+.raci-C { background: #F3E8FF; color: #6D28D9; }
+.raci-I { background: #F0FDF4; color: #065F46; }
+.links-list { margin-top: 4px; display: flex; flex-direction: column; gap: 5px; }
+.link-item { display: flex; align-items: center; gap: 6px; }
+.link-item a { font-size: 12px; color: #3B82F6; text-decoration: none; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.link-item a:hover { text-decoration: underline; }
+.link-row-edit { display: flex; gap: 6px; margin-bottom: 6px; }
+.link-row-edit .form-input { flex: 1; }
+.link-row-edit .form-input.url { flex: 2; }
+.remove-link-btn { padding: 4px 8px; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 4px; color: #DC2626; cursor: pointer; font-size: 11px; flex-shrink: 0; }
+.remove-link-btn:hover { background: #DC2626; color: #fff; }
+.add-link-btn { padding: 5px 10px; background: #F9FAFB; border: 1px dashed #D1D5DB; border-radius: 4px; color: #6B7280; cursor: pointer; font-size: 11px; transition: all .15s; }
+.add-link-btn:hover { border-color: #3B82F6; color: #3B82F6; }
+.notes-display { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 6px; padding: 8px 10px; font-size: 12px; color: #374151; line-height: 1.5; white-space: pre-wrap; }
+.notes-empty { color: #9CA3AF; font-style: italic; font-size: 12px; }
+.card-has-notes { position: absolute; top: 7px; right: 22px; width: 6px; height: 6px; border-radius: 50%; background: #F59E0B; }
+.card-has-links { position: absolute; top: 7px; right: 32px; width: 6px; height: 6px; border-radius: 50%; background: #3B82F6; }
+.section-divider { border: none; border-top: 1px solid #F3F4F6; margin: 14px 0; }
+
 /* ── VIEW TABS ────────────────────────────────────────────────────────────── */
 .view-tabs { background: #fff; border-bottom: 1px solid #E5E7EB; padding: 0 32px; display: flex; gap: 0; }
 .view-tab { padding: 12px 20px; font-size: 13px; font-weight: 500; color: #6B7280; cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; font-family: inherit; transition: all .15s; display: flex; align-items: center; gap: 7px; }
@@ -363,12 +391,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
     <div id="modal-view">
       <div class="modal-title-display" id="m-title"></div>
-      <div class="modal-row"><div class="modal-label">👤 Owner</div><div class="modal-value" id="m-owner"></div></div>
       <div class="modal-row"><div class="modal-label">📅 Due Offset</div><div class="modal-value" id="m-offset"></div></div>
       <div class="modal-row"><div class="modal-label">🔗 Dependency</div><div class="modal-value" id="m-dep"></div></div>
       <div class="modal-row"><div class="modal-label">⚡ Automation</div><div class="modal-value" id="m-auto"></div></div>
       <div class="modal-row"><div class="modal-label">📋 Description</div><div class="modal-value" id="m-desc"></div></div>
       <div class="modal-risk" id="m-risk"></div>
+      <hr class="section-divider">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6B7280;margin-bottom:8px">RACI</div>
+      <div class="raci-grid" id="m-raci"></div>
+      <hr class="section-divider">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6B7280;margin-bottom:8px">🔗 Reference Links</div>
+      <div class="links-list" id="m-links"><span class="notes-empty">No links added</span></div>
+      <hr class="section-divider">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6B7280;margin-bottom:8px">📝 Notes & Feedback</div>
+      <div id="m-notes"><span class="notes-empty">No notes yet</span></div>
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeModal()">Close</button>
         <button class="btn btn-primary" id="view-edit-btn" onclick="toggleModalMode()">✎ Edit Card</button>
@@ -376,12 +412,26 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
     <div id="modal-edit" style="display:none">
       <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="e-title" type="text"></div>
-      <div class="form-group"><label class="form-label">Owner</label><input class="form-input" id="e-owner" type="text"></div>
       <div class="form-group"><label class="form-label">Due Offset</label><input class="form-input" id="e-offset" type="text" placeholder="e.g. Day 5"></div>
       <div class="form-group"><label class="form-label">Dependency</label><input class="form-input" id="e-dep" type="text"></div>
       <div class="form-group"><label class="form-label">Automation Opportunity</label><input class="form-input" id="e-auto" type="text"></div>
       <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="e-desc"></textarea></div>
       <div class="form-group"><label class="form-label">Risk Flag</label><input class="form-input" id="e-risk" type="text"></div>
+      <hr class="section-divider">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6B7280;margin-bottom:10px">RACI</div>
+      <div style="font-size:11px;color:#9CA3AF;margin-bottom:10px">R = Responsible · A = Accountable · C = Consulted · I = Informed</div>
+      <div class="form-group"><label class="form-label"><span class="raci-badge raci-R">R</span> Responsible (does the work)</label><input class="form-input" id="e-raci-r" type="text" placeholder="e.g. AM"></div>
+      <div class="form-group"><label class="form-label"><span class="raci-badge raci-A">A</span> Accountable (owns outcome)</label><input class="form-input" id="e-raci-a" type="text" placeholder="e.g. GAD"></div>
+      <div class="form-group"><label class="form-label"><span class="raci-badge raci-C">C</span> Consulted (provides input)</label><input class="form-input" id="e-raci-c" type="text" placeholder="e.g. EDM/Paid"></div>
+      <div class="form-group"><label class="form-label"><span class="raci-badge raci-I">I</span> Informed (kept in loop)</label><input class="form-input" id="e-raci-i" type="text" placeholder="e.g. VP CS"></div>
+      <hr class="section-divider">
+      <div class="form-group">
+        <label class="form-label">🔗 Reference Links</label>
+        <div id="e-links-list"></div>
+        <button class="add-link-btn" onclick="addLinkRow()">+ Add Link</button>
+      </div>
+      <hr class="section-divider">
+      <div class="form-group"><label class="form-label">📝 Notes & Feedback</label><textarea class="form-textarea" id="e-notes" placeholder="Add team notes, client feedback, or follow-up actions here…" style="min-height:90px"></textarea></div>
       <div class="modal-actions">
         <button class="btn btn-primary" onclick="saveCard()">Save Changes</button>
         <button class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
@@ -536,6 +586,41 @@ const DEFAULT_CARDS = [
   {id:'c52',lane:'email',phase:'p7',title:'30-Day Review',owner:'Account Manager / GAD',offset:'Day 51',dep:'30 days post-launch',auto:'Automated reporting',risk:'Underperformance',desc:'Report on initial KPIs, identify quick wins and issues.',status:'not-started'},
   {id:'c53',lane:'email',phase:'p7',title:'60-Day Review',owner:'Email Strategist',offset:'Day 81',dep:'60 days post-launch',auto:'Scheduled review reminders',risk:'Lack of progress',desc:'Assess progress, adjust tactics as needed.',status:'not-started'},
   {id:'c54',lane:'email',phase:'p7',title:'90-Day Review & Retention Check',owner:'AD / GAD, Client',offset:'Day 111',dep:'90 days post-launch',auto:'Automated meeting scheduling',risk:'Client dissatisfaction',desc:'Present results, discuss next steps, address retention risks.',status:'not-started'},
+
+  // ── MISSING CARDS FROM MIRO (all channels) ───────────────────────────────
+  // Onboarding Questionnaire — Phase 2
+  {id:'c55',lane:'seo',phase:'p2',title:'Onboarding Questionnaire',offset:'Day 3',dep:'Contract signature',auto:'Auto-send questionnaire link via CRM on contract close',risk:'Incomplete or delayed responses stall strategy',desc:'Send and collect onboarding questionnaire from client covering business goals, target audience, competitors, content preferences, and access needs.',raci:{r:'AM',a:'AE',c:'PM / EDM',i:'GAD'},notes:'',links:[],status:'not-started'},
+  {id:'c56',lane:'paid',phase:'p2',title:'Onboarding Questionnaire',offset:'Day 3',dep:'Contract signature',auto:'Auto-send questionnaire link via CRM on contract close',risk:'Incomplete or delayed responses stall strategy',desc:'Send and collect onboarding questionnaire from client covering business goals, budget allocation, target audiences, existing ad accounts, and conversion tracking setup.',raci:{r:'AM',a:'AE',c:'PM / Paid Media',i:'GAD'},notes:'',links:[],status:'not-started'},
+  {id:'c57',lane:'email',phase:'p2',title:'Onboarding Questionnaire',offset:'Day 3',dep:'Contract signature',auto:'Auto-send questionnaire link via CRM on contract close',risk:'Incomplete or delayed responses stall strategy',desc:'Send and collect onboarding questionnaire from client covering email platform access, list health, brand voice, campaign history, and automation goals.',raci:{r:'AM',a:'AE',c:'PM / EDM',i:'GAD'},notes:'',links:[],status:'not-started'},
+
+  // Initial KWR Call — Phase 3 (SEO only)
+  {id:'c58',lane:'seo',phase:'p3',title:'Initial KWR Call with Client',offset:'Day 9',dep:'Welcome Call complete',auto:'Schedule via calendar automation post-welcome call',risk:'Client unavailability delays keyword research direction',desc:'SEO Specialist conducts preliminary keyword research ahead of this call. During the call: confirm topic priorities, page opportunities, low-hanging fruit, and client-preferred terms. AM handles Content Launch portion.',raci:{r:'EDM / SEO Strategist',a:'AM',c:'PM',i:'VP SEO'},notes:'',links:[],status:'not-started'},
+
+  // Internal Pre-Strategy Alignment — Phase 4/5
+  {id:'c59',lane:'seo',phase:'p4',title:'Internal Pre-Strategy Alignment (GAD + Specialists)',offset:'Day 14',dep:'Audits complete',auto:'Auto-schedule via project milestone trigger',risk:'Misaligned strategy direction between AM and delivery team',desc:'AM leads internal alignment meeting with GAD and SEO Specialists before strategy call. Align on key findings from audits, recommended priorities, and client-specific nuances from welcome and KWR calls.',raci:{r:'AM',a:'EDM',c:'DAI / PM',i:'GAD'},notes:'',links:[],status:'not-started'},
+  {id:'c60',lane:'paid',phase:'p4',title:'Internal Pre-Strategy Alignment (GAD + Specialists)',offset:'Day 14',dep:'Account audit complete',auto:'Auto-schedule via project milestone trigger',risk:'Strategy deck presented without internal QA or alignment',desc:'AM and Paid Media Specialist meet with GAD to align on audit findings, campaign build direction, and strategy deck structure before client presentation. Paid Specialist assigns slides between AM and specialist.',raci:{r:'AM / Paid Media',a:'EDM',c:'DAI / PM',i:'GAD'},notes:'',links:[],status:'not-started'},
+  {id:'c61',lane:'email',phase:'p4',title:'Internal Pre-Strategy Alignment (GAD + Specialists)',offset:'Day 14',dep:'ESP audit complete',auto:'Auto-schedule via project milestone trigger',risk:'Email strategy presented without delivery team alignment',desc:'AM leads internal sync with GAD and Email Strategist to align on audit findings, automation opportunities, and strategy deck before client presentation.',raci:{r:'AM',a:'EDM',c:'DAI / PM',i:'GAD'},notes:'',links:[],status:'not-started'},
+
+  // DAI Technical Audit & Dashboard Build — Phase 4
+  {id:'c62',lane:'seo',phase:'p4',title:'DAI Technical Audit & Dashboard Build',offset:'Day 10',dep:'All access granted',auto:'Auto-trigger DAI task on access confirmation',risk:'Delayed access blocks dashboard setup and baseline reporting',desc:'DAI conducts technical audit of analytics setup, tracking integrity, and data layer. Builds SEO and Paid performance dashboards. Reviews with AM ahead of strategy call.',raci:{r:'DAI',a:'AM',c:'EDM / Paid',i:'GAD'},notes:'',links:[],status:'not-started'},
+  {id:'c63',lane:'paid',phase:'p4',title:'DAI Technical Audit & Dashboard Build',offset:'Day 10',dep:'All access granted',auto:'Auto-trigger DAI task on access confirmation',risk:'Tracking gaps discovered post-launch cause data loss',desc:'DAI audits conversion tracking, pixel setup, and tag manager. Builds paid media performance dashboard. Flags any tracking issues to Paid Specialist before campaign launch.',raci:{r:'DAI',a:'AM',c:'EDM / Paid',i:'GAD'},notes:'',links:[],status:'not-started'},
+  {id:'c64',lane:'email',phase:'p4',title:'DAI Technical Audit & Dashboard Build',offset:'Day 10',dep:'All access granted',auto:'Auto-trigger DAI task on access confirmation',risk:'Incomplete analytics connection limits email attribution reporting',desc:'DAI reviews analytics integration with ESP, sets up email performance tracking, and builds reporting dashboard for open rates, CTR, revenue attribution.',raci:{r:'DAI',a:'AM',c:'EDM',i:'GAD'},notes:'',links:[],status:'not-started'},
+
+  // Paid Media Campaign Build — Phase 5
+  {id:'c65',lane:'paid',phase:'p5',title:'Paid Media Campaign Build',offset:'Day 18',dep:'Strategy deck approved internally',auto:'Ad Ops build triggered from strategy deck approval in Clarity',risk:'Campaign build errors discovered post-launch; missed launch window',desc:'Ad Ops creates campaign build from welcome call deck and recording. Paid Media Specialist reviews for QA — checks strategy alignment, grammatical errors, best practice compliance. Once approved, client receives build for sign-off within 48 hours of strategy call.',raci:{r:'Paid Media Specialist',a:'Paid Manager',c:'AM',i:'GAD'},notes:'',links:[],status:'not-started'},
+
+  // Campaign Launch & Go-Live — Phase 6
+  {id:'c66',lane:'paid',phase:'p6',title:'Campaign Launch & Go-Live',offset:'Day 23',dep:'Client approves campaign build',auto:'Launch checklist automation in Clarity',risk:'Launch delayed beyond 48-hour SLA; tracking not firing correctly',desc:'Paid Media Specialist implements approved campaign build and launches within 48 hours of client approval. Confirms all tracking is firing, budgets are correct, and ad copy matches approved version.',raci:{r:'Paid Media Specialist',a:'Paid Manager',c:'AM / DAI',i:'GAD'},notes:'',links:[],status:'not-started'},
+
+  // NPS Survey — Phase 7 (all channels)
+  {id:'c67',lane:'seo',phase:'p7',title:'NPS Survey',offset:'Day 60',dep:'60 days post-launch',auto:'Auto-send NPS survey via CRM at 60-day milestone',risk:'Low response rate; negative NPS not surfaced before renewal',desc:'Send NPS survey to client at 60-day mark. AM reviews results and shares with GAD. If positive, explore case study opportunity. If negative, schedule debrief call with GAD to address concerns and course-correct.',raci:{r:'AM',a:'GAD',c:'EDM / Paid',i:'VP CS'},notes:'',links:[],status:'not-started'},
+  {id:'c68',lane:'paid',phase:'p7',title:'NPS Survey',offset:'Day 60',dep:'60 days post-launch',auto:'Auto-send NPS survey via CRM at 60-day milestone',risk:'Low response rate; negative NPS not surfaced before renewal',desc:'Send NPS survey to client at 60-day mark. AM reviews results and shares with GAD. If positive, explore case study opportunity. If negative, schedule debrief call with GAD to address concerns.',raci:{r:'AM',a:'GAD',c:'EDM / Paid',i:'VP CS'},notes:'',links:[],status:'not-started'},
+  {id:'c69',lane:'email',phase:'p7',title:'NPS Survey',offset:'Day 60',dep:'60 days post-launch',auto:'Auto-send NPS survey via CRM at 60-day milestone',risk:'Low response rate; negative NPS not surfaced before renewal',desc:'Send NPS survey to client at 60-day mark. AM reviews results and shares with GAD. If positive, explore case study opportunity. If negative, schedule debrief call with GAD to address concerns.',raci:{r:'AM',a:'GAD',c:'EDM / Paid',i:'VP CS'},notes:'',links:[],status:'not-started'},
+
+  // GAD 2-Month Touch Base — Phase 7 (all channels)
+  {id:'c70',lane:'seo',phase:'p7',title:'GAD 2-Month Touch Base',offset:'Day 81',dep:'60-Day Review complete',auto:'Scheduled reminder in Clarity at 60-day mark',risk:'Client dissatisfaction not escalated; retention risk undetected',desc:'GAD joins monthly client call at the 2-month mark. Reviews performance trends, addresses any concerns escalated by AM, and reinforces strategic partnership. AM provides backstory and prepares GAD ahead of call.',raci:{r:'GAD',a:'AM',c:'EDM / Paid',i:'VP CS'},notes:'',links:[],status:'not-started'},
+  {id:'c71',lane:'paid',phase:'p7',title:'GAD 2-Month Touch Base',offset:'Day 81',dep:'60-Day Review complete',auto:'Scheduled reminder in Clarity at 60-day mark',risk:'Client dissatisfaction not escalated; retention risk undetected',desc:'GAD joins monthly client call at the 2-month mark. Reviews paid media performance, addresses concerns, and reinforces partnership. AM prepares GAD with context ahead of call.',raci:{r:'GAD',a:'AM',c:'EDM / Paid',i:'VP CS'},notes:'',links:[],status:'not-started'},
+  {id:'c72',lane:'email',phase:'p7',title:'GAD 2-Month Touch Base',offset:'Day 81',dep:'60-Day Review complete',auto:'Scheduled reminder in Clarity at 60-day mark',risk:'Client dissatisfaction not escalated; retention risk undetected',desc:'GAD joins monthly client call at the 2-month mark. Reviews email performance, addresses concerns, and reinforces partnership. AM prepares GAD with context ahead of call.',raci:{r:'GAD',a:'AM',c:'EDM / Paid',i:'VP CS'},notes:'',links:[],status:'not-started'},
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -854,6 +939,8 @@ function renderCard(card, p) {
     <div class="card-owner">👤 <span>${esc(card.owner)}</span></div>
     <div class="card-dep">🔗 ${esc(card.dep)}</div>
     <div class="card-risk">⚠ ${esc(card.risk)}</div>
+    ${card.notes ? `<div class="card-has-notes" title="Has notes"></div>` : ''}
+    ${(card.links && card.links.length) ? `<div class="card-has-links" title="Has links"></div>` : ''}
     ${p.canManage ? `<button class="card-copy-btn" onclick="event.stopPropagation();duplicateCard('${card.id}')">⧉ Copy</button>` : ''}
   </div>`;
 }
@@ -878,12 +965,32 @@ function showModalView(card) {
   document.getElementById('m-channel').textContent = LANE_LABELS[card.lane] || card.lane;
   document.getElementById('m-channel').style.color = LANE_COLORS[card.lane] || '#6B7280';
   document.getElementById('m-title').textContent  = card.title;
-  document.getElementById('m-owner').textContent  = card.owner;
   document.getElementById('m-offset').textContent = card.offset;
   document.getElementById('m-dep').textContent    = card.dep;
   document.getElementById('m-auto').textContent   = card.auto;
   document.getElementById('m-desc').textContent   = card.desc;
   document.getElementById('m-risk').textContent   = '⚠ Risk Flag: ' + card.risk;
+
+  // RACI
+  const raci = card.raci || {};
+  const raciEl = document.getElementById('m-raci');
+  raciEl.innerHTML = [['R','Responsible'],['A','Accountable'],['C','Consulted'],['I','Informed']].map(([k,label]) =>
+    `<div class="raci-cell"><span class="raci-label"><span class="raci-badge raci-${k}">${k}</span> ${label}</span><div class="raci-value">${esc(raci[k.toLowerCase()]||'—')}</div></div>`
+  ).join('');
+
+  // Links
+  const links = card.links || [];
+  const linksEl = document.getElementById('m-links');
+  linksEl.innerHTML = links.length
+    ? links.map(l => `<div class="link-item"><a href="${esc(l.url)}" target="_blank" rel="noopener">🔗 ${esc(l.label||l.url)}</a></div>`).join('')
+    : '<span class="notes-empty">No links added</span>';
+
+  // Notes
+  const notesEl = document.getElementById('m-notes');
+  notesEl.innerHTML = card.notes
+    ? `<div class="notes-display">${esc(card.notes)}</div>`
+    : '<span class="notes-empty">No notes yet</span>';
+
   document.getElementById('modal-view').style.display = '';
   document.getElementById('modal-edit').style.display = 'none';
   const toggle = document.getElementById('m-toggle');
@@ -928,17 +1035,56 @@ function toggleModalMode() {
 }
 
 function fillEditForm(card) {
-  ['title','owner','offset','dep','auto','desc','risk'].forEach(f => {
+  ['title','offset','dep','auto','desc','risk','notes'].forEach(f => {
     const el = document.getElementById('e-' + f);
     if (el) el.value = card[f] || '';
   });
+  const raci = card.raci || {};
+  ['r','a','c','i'].forEach(k => {
+    const el = document.getElementById('e-raci-' + k);
+    if (el) el.value = raci[k] || '';
+  });
+  // Links
+  const links = card.links || [];
+  const list = document.getElementById('e-links-list');
+  list.innerHTML = '';
+  links.forEach((l, i) => addLinkRow(l.label, l.url));
+}
+
+function addLinkRow(label, url) {
+  const list = document.getElementById('e-links-list');
+  const row = document.createElement('div');
+  row.className = 'link-row-edit';
+  row.innerHTML = `
+    <input class="form-input" placeholder="Label (e.g. Strategy Doc)" value="${esc(label||'')}">
+    <input class="form-input url" placeholder="https://…" value="${esc(url||'')}">
+    <button class="remove-link-btn" onclick="this.parentElement.remove()">✕</button>`;
+  list.appendChild(row);
 }
 
 function saveCard() {
   if (!perms().canEdit) { toast('You do not have permission to edit cards'); return; }
   const updates = {};
-  ['title','owner','offset','dep','auto','desc','risk'].forEach(f => { updates[f] = document.getElementById('e-' + f).value.trim(); });
+  ['title','offset','dep','auto','desc','risk','notes'].forEach(f => {
+    const el = document.getElementById('e-' + f);
+    if (el) updates[f] = el.value.trim();
+  });
   if (!updates.title) { toast('Title is required'); return; }
+  // RACI
+  updates.raci = {};
+  ['r','a','c','i'].forEach(k => {
+    const el = document.getElementById('e-raci-' + k);
+    if (el) updates.raci[k] = el.value.trim();
+  });
+  // Links
+  const rows = document.querySelectorAll('#e-links-list .link-row-edit');
+  updates.links = [];
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const label = inputs[0].value.trim();
+    const url   = inputs[1].value.trim();
+    if (url) updates.links.push({ label: label || url, url });
+  });
   if (modalIsNew) {
     if (!perms().canManage) { toast('Adding cards requires Manager access'); return; }
     state.cards.push({ id: uid(), lane: modalNewLane, phase: modalNewPhase, status: 'not-started', ...updates });
