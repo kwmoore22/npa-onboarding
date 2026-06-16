@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NP Digital — Client Onboarding Swimlane</title>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     FIREBASE SETUP — paste your project config here after creating a project
+     at https://console.firebase.google.com
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<script>
+const FIREBASE_CONFIG = {
+  apiKey:            "PASTE_YOUR_API_KEY",
+  authDomain:        "PASTE_YOUR_AUTH_DOMAIN",
+  databaseURL:       "PASTE_YOUR_DATABASE_URL",
+  projectId:         "PASTE_YOUR_PROJECT_ID",
+  storageBucket:     "PASTE_YOUR_STORAGE_BUCKET",
+  messagingSenderId: "PASTE_YOUR_MESSAGING_SENDER_ID",
+  appId:             "PASTE_YOUR_APP_ID"
+};
+// Set to true once you have filled in real Firebase config values above
+const FIREBASE_ENABLED = false;
+</script>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; color: #111; }
+
+/* ── AUTH SCREENS ─────────────────────────────────────────────────────────── */
+.auth-screen { display: none; position: fixed; inset: 0; background: #f0f2f5; z-index: 500; align-items: center; justify-content: center; }
+.auth-screen.visible { display: flex; }
+.auth-card { background: #fff; border-radius: 16px; padding: 40px 36px; width: 400px; box-shadow: 0 8px 40px rgba(0,0,0,.12); }
+.auth-logo { font-size: 14px; font-weight: 800; color: #111827; letter-spacing: -0.3px; margin-bottom: 6px; }
+.auth-logo span { color: #3B82F6; }
+.auth-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; color: #111; }
+.auth-subtitle { font-size: 13px; color: #6B7280; margin-bottom: 28px; }
+.auth-field { margin-bottom: 16px; }
+.auth-label { display: block; font-size: 11px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
+.auth-input { width: 100%; padding: 10px 12px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 14px; font-family: inherit; color: #111; transition: border-color .15s; }
+.auth-input:focus { outline: none; border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,.1); }
+.auth-btn { width: 100%; padding: 11px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all .15s; }
+.auth-btn.primary { background: #111827; color: #fff; margin-top: 4px; }
+.auth-btn.primary:hover { background: #1F2937; }
+.auth-btn.link { background: transparent; color: #3B82F6; margin-top: 12px; font-weight: 500; }
+.auth-btn.link:hover { color: #2563EB; }
+.auth-error { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 6px; padding: 10px 12px; font-size: 12px; color: #DC2626; margin-bottom: 14px; display: none; }
+.auth-error.show { display: block; }
+.auth-notice { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 6px; padding: 10px 12px; font-size: 12px; color: #1D4ED8; margin-bottom: 16px; }
+.auth-pending { background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 6px; padding: 12px; font-size: 12px; color: #92400E; margin-bottom: 14px; display: none; }
+.auth-pending.show { display: block; }
+
+/* ── FIREBASE SETUP BANNER ────────────────────────────────────────────────── */
+.setup-banner { background: #FFF7ED; border-bottom: 2px solid #F59E0B; padding: 12px 32px; display: flex; align-items: center; gap: 12px; font-size: 13px; color: #92400E; }
+.setup-banner strong { font-weight: 700; }
+.setup-banner a { color: #D97706; font-weight: 600; }
+
+/* ── HEADER ───────────────────────────────────────────────────────────────── */
+.header { background: #111827; color: #fff; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
+.header-left h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+.header-left p { font-size: 13px; color: #9CA3AF; margin-top: 2px; }
+.header-right { display: flex; align-items: center; gap: 16px; }
+.legend { display: flex; gap: 14px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #D1D5DB; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.user-pill { display: flex; align-items: center; gap: 8px; background: #1F2937; border-radius: 20px; padding: 5px 12px 5px 5px; }
+.user-avatar { width: 26px; height: 26px; border-radius: 50%; background: #3B82F6; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.user-info { display: flex; flex-direction: column; }
+.user-email { font-size: 11px; color: #E5E7EB; font-weight: 500; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-role-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
+.role-admin   { color: #F59E0B; }
+.role-manager { color: #A78BFA; }
+.role-editor  { color: #34D399; }
+.role-viewer  { color: #9CA3AF; }
+.logout-btn { background: transparent; border: 1px solid #374151; color: #9CA3AF; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-family: inherit; }
+.logout-btn:hover { border-color: #6B7280; color: #E5E7EB; }
+
+/* ── TOOLBAR ──────────────────────────────────────────────────────────────── */
+.toolbar { background: #1F2937; padding: 10px 32px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.filter-label { color: #6B7280; font-size: 12px; margin-right: 4px; }
+.filter-btn { padding: 5px 14px; border-radius: 20px; border: 1px solid #374151; background: transparent; color: #D1D5DB; font-size: 12px; cursor: pointer; transition: all .15s; }
+.filter-btn:hover, .filter-btn.active { background: #3B82F6; border-color: #3B82F6; color: #fff; }
+.toolbar-sep { width: 1px; height: 20px; background: #374151; margin: 0 4px; }
+.tool-btn { padding: 5px 12px; border-radius: 6px; border: 1px solid #374151; background: transparent; color: #D1D5DB; font-size: 12px; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 5px; }
+.tool-btn:hover { background: #374151; color: #fff; }
+.tool-btn.danger:hover { background: #7F1D1D; border-color: #DC2626; color: #FCA5A5; }
+.tool-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+.board-title-row { padding: 16px 32px 10px; display: flex; align-items: center; justify-content: space-between; }
+.board-title-row h2 { font-size: 15px; font-weight: 600; color: #374151; }
+.board-title-row p { font-size: 12px; color: #9CA3AF; }
+
+/* ── BOARD ────────────────────────────────────────────────────────────────── */
+.board { overflow-x: auto; }
+.board-inner { min-width: 1400px; }
+
+.phase-header-row { display: grid; background: #111827; position: sticky; top: 0; z-index: 10; }
+.phase-header-row .corner { padding: 12px 16px; font-size: 11px; color: #6B7280; text-transform: uppercase; letter-spacing: .5px; border-right: 1px solid #374151; }
+.phase-col-header { padding: 12px 10px; text-align: center; border-right: 1px solid #374151; }
+.phase-col-header .phase-num { font-size: 10px; color: #6B7280; text-transform: uppercase; letter-spacing: .5px; }
+.phase-col-header .phase-name { font-size: 11px; color: #E5E7EB; font-weight: 600; margin-top: 2px; line-height: 1.3; outline: none; }
+.phase-col-header .phase-days { font-size: 10px; color: #3B82F6; margin-top: 3px; outline: none; }
+[contenteditable][data-editable]:hover:not([data-readonly]) { background: rgba(255,255,255,.06); border-radius: 3px; cursor: text; }
+[contenteditable][data-editable]:focus:not([data-readonly]) { background: rgba(59,130,246,.15); border-radius: 3px; outline: 1px solid #3B82F6; }
+[contenteditable][data-readonly] { cursor: default; pointer-events: none; }
+
+.swimlane { display: grid; border-top: 2px solid; }
+.swimlane.seo   { border-color: #F59E0B; }
+.swimlane.paid  { border-color: #8B5CF6; }
+.swimlane.email { border-color: #10B981; }
+
+.lane-label { padding: 16px 12px; display: flex; flex-direction: column; justify-content: flex-start; border-right: 1px solid #D1D5DB; background: #fff; position: sticky; left: 0; z-index: 5; }
+.lane-label .channel-name { font-size: 13px; font-weight: 700; outline: none; }
+.lane-label .channel-tag  { font-size: 10px; margin-top: 4px; padding: 2px 6px; border-radius: 10px; font-weight: 500; }
+.seo   .lane-label .channel-name { color: #92400E; }
+.seo   .lane-label .channel-tag  { background: #FEF3C7; color: #92400E; }
+.paid  .lane-label .channel-name { color: #5B21B6; }
+.paid  .lane-label .channel-tag  { background: #EDE9FE; color: #5B21B6; }
+.email .lane-label .channel-name { color: #065F46; }
+.email .lane-label .channel-tag  { background: #D1FAE5; color: #065F46; }
+
+.phase-cell { padding: 8px; border-right: 1px solid #E5E7EB; background: #fff; min-height: 160px; border-bottom: 1px solid #E5E7EB; position: relative; transition: background .15s; }
+.phase-cell.empty-placeholder { background: #F9FAFB; display: flex; align-items: center; justify-content: center; }
+.phase-cell.drag-over { background: #EFF6FF; outline: 2px dashed #3B82F6; outline-offset: -2px; }
+.add-card-btn { width: 100%; padding: 5px; margin-top: 4px; border: 1px dashed #D1D5DB; border-radius: 6px; background: transparent; color: #9CA3AF; font-size: 11px; cursor: pointer; text-align: center; transition: all .15s; }
+.add-card-btn:hover { border-color: #3B82F6; color: #3B82F6; background: #EFF6FF; }
+
+/* ── CARDS ────────────────────────────────────────────────────────────────── */
+.card { border-radius: 6px; padding: 9px 10px; margin-bottom: 7px; font-size: 11px; border-left: 3px solid; cursor: pointer; transition: transform .1s, box-shadow .1s; position: relative; user-select: none; }
+.card[draggable="true"] { cursor: grab; }
+.card[draggable="true"]:active { cursor: grabbing; }
+.card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.12); }
+.card.dragging { opacity: .4; }
+.seo   .card { background: #FFFBEB; border-color: #F59E0B; }
+.paid  .card { background: #F5F3FF; border-color: #8B5CF6; }
+.email .card { background: #ECFDF5; border-color: #10B981; }
+.card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 4px; margin-bottom: 4px; }
+.card-title  { font-weight: 700; font-size: 11px; color: #111; line-height: 1.3; flex: 1; }
+.status-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; border: 1.5px solid rgba(0,0,0,.15); margin-top: 1px; transition: transform .1s; }
+.status-dot.clickable { cursor: pointer; }
+.status-dot.clickable:hover { transform: scale(1.3); }
+.status-dot.not-started { background: #D1D5DB; }
+.status-dot.in-progress { background: #3B82F6; }
+.status-dot.complete    { background: #10B981; }
+.card-owner  { font-size: 10px; color: #6B7280; margin-bottom: 3px; }
+.card-owner span { font-weight: 500; color: #374151; }
+.card-offset { display: inline-block; font-size: 9px; font-weight: 600; padding: 1px 5px; border-radius: 3px; margin-bottom: 4px; }
+.seo   .card-offset { background: #FDE68A; color: #92400E; }
+.paid  .card-offset { background: #DDD6FE; color: #5B21B6; }
+.email .card-offset { background: #A7F3D0; color: #065F46; }
+.card-risk { font-size: 9px; color: #EF4444; margin-top: 4px; }
+.card-dep  { font-size: 9px; color: #9CA3AF; margin-top: 2px; }
+.kpi-badge { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 4px; padding: 5px 7px; margin-top: 6px; font-size: 9px; color: #1D4ED8; line-height: 1.4; outline: none; }
+.kpi-badge::before { content: "✓ KPI: "; font-weight: 700; }
+
+/* ── MODALS ───────────────────────────────────────────────────────────────── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 100; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 12px; padding: 28px; max-width: 520px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,.2); max-height: 90vh; overflow-y: auto; }
+.modal-channel-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.modal-channel { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+.modal-mode-toggle { font-size: 11px; color: #6B7280; cursor: pointer; padding: 3px 8px; border: 1px solid #E5E7EB; border-radius: 4px; background: #F9FAFB; }
+.modal-mode-toggle:hover { background: #F3F4F6; }
+.modal-title-display { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+.modal-row { display: flex; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+.modal-label { font-weight: 600; color: #6B7280; min-width: 90px; flex-shrink: 0; }
+.modal-value { color: #111; }
+.modal-risk { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #DC2626; margin-top: 8px; }
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 11px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: .4px; display: block; margin-bottom: 4px; }
+.form-input, .form-textarea { width: 100%; padding: 8px 10px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 13px; font-family: inherit; color: #111; transition: border-color .15s; }
+.form-input:focus, .form-textarea:focus { outline: none; border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,.1); }
+.form-textarea { resize: vertical; min-height: 70px; }
+.modal-actions { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+.btn { padding: 8px 18px; border-radius: 6px; font-size: 13px; cursor: pointer; border: none; font-family: inherit; font-weight: 500; transition: all .15s; }
+.btn-primary   { background: #111827; color: #fff; }
+.btn-primary:hover { background: #1F2937; }
+.btn-secondary { background: #F3F4F6; color: #374151; border: 1px solid #E5E7EB; }
+.btn-secondary:hover { background: #E5E7EB; }
+.btn-danger    { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; margin-left: auto; }
+.btn-danger:hover { background: #DC2626; color: #fff; }
+.readonly-note { font-size: 11px; color: #9CA3AF; font-style: italic; margin-top: 14px; text-align: center; }
+
+/* ── ADMIN PANEL ──────────────────────────────────────────────────────────── */
+.admin-modal { max-width: 640px; }
+.admin-title { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+.admin-subtitle { font-size: 12px; color: #6B7280; margin-bottom: 20px; }
+.user-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.user-table th { text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #9CA3AF; padding: 6px 8px; border-bottom: 1px solid #E5E7EB; }
+.user-table td { padding: 10px 8px; border-bottom: 1px solid #F3F4F6; vertical-align: middle; }
+.user-table tr:last-child td { border-bottom: none; }
+.role-select { padding: 4px 8px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 12px; font-family: inherit; color: #111; cursor: pointer; }
+.role-select:focus { outline: none; border-color: #3B82F6; }
+.user-status-badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600; }
+.badge-active   { background: #D1FAE5; color: #065F46; }
+.badge-pending  { background: #FEF3C7; color: #92400E; }
+.remove-user-btn { padding: 3px 8px; font-size: 11px; border: 1px solid #FECACA; border-radius: 4px; background: #FEF2F2; color: #DC2626; cursor: pointer; }
+.remove-user-btn:hover { background: #DC2626; color: #fff; }
+.admin-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #6B7280; margin: 20px 0 10px; }
+.invite-row { display: flex; gap: 8px; }
+.invite-row .form-input { flex: 1; }
+
+/* ── PERMISSION BANNER ────────────────────────────────────────────────────── */
+.perm-banner { background: #F9FAFB; border-bottom: 1px solid #E5E7EB; padding: 8px 32px; font-size: 12px; color: #6B7280; display: flex; align-items: center; gap: 8px; }
+.perm-banner .dot { width: 7px; height: 7px; border-radius: 50%; background: #D1D5DB; }
+
+/* ── TOAST ────────────────────────────────────────────────────────────────── */
+.toast { position: fixed; bottom: 24px; right: 24px; background: #111827; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; z-index: 600; opacity: 0; transform: translateY(8px); transition: all .25s; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── SYNC INDICATOR ───────────────────────────────────────────────────────── */
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #10B981; display: inline-block; margin-right: 4px; }
+.sync-dot.syncing { background: #F59E0B; animation: pulse .8s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ─────────────────────────────────────────────────────── -->
+<div class="auth-screen" id="screen-login">
+  <div class="auth-card">
+    <div class="auth-logo">NP <span>Digital</span></div>
+    <div class="auth-title">Welcome back</div>
+    <div class="auth-subtitle">Sign in to access the onboarding board</div>
+    <div class="auth-error" id="login-error"></div>
+    <div class="auth-field">
+      <label class="auth-label">Email</label>
+      <input class="auth-input" type="email" id="login-email" placeholder="you@npdigital.com">
+    </div>
+    <div class="auth-field">
+      <label class="auth-label">Password</label>
+      <input class="auth-input" type="password" id="login-password" placeholder="••••••••">
+    </div>
+    <button class="auth-btn primary" onclick="doLogin()">Sign In</button>
+    <button class="auth-btn link" onclick="showScreen('register')">Don't have an account? Register →</button>
+  </div>
+</div>
+
+<!-- ── REGISTER SCREEN ──────────────────────────────────────────────────── -->
+<div class="auth-screen" id="screen-register">
+  <div class="auth-card">
+    <div class="auth-logo">NP <span>Digital</span></div>
+    <div class="auth-title">Create account</div>
+    <div class="auth-subtitle">New accounts start as <strong>Viewer</strong>. An admin will upgrade your access.</div>
+    <div class="auth-notice">Your account will be visible to admins who can grant editing access.</div>
+    <div class="auth-error" id="register-error"></div>
+    <div class="auth-field">
+      <label class="auth-label">Full Name</label>
+      <input class="auth-input" type="text" id="register-name" placeholder="Jane Smith">
+    </div>
+    <div class="auth-field">
+      <label class="auth-label">Email</label>
+      <input class="auth-input" type="email" id="register-email" placeholder="you@npdigital.com">
+    </div>
+    <div class="auth-field">
+      <label class="auth-label">Password</label>
+      <input class="auth-input" type="password" id="register-password" placeholder="8+ characters">
+    </div>
+    <button class="auth-btn primary" onclick="doRegister()">Create Account</button>
+    <button class="auth-btn link" onclick="showScreen('login')">← Back to sign in</button>
+  </div>
+</div>
+
+<!-- ── MAIN APP ─────────────────────────────────────────────────────────── -->
+<div id="app" style="display:none">
+
+  <div class="setup-banner" id="setup-banner" style="display:none">
+    ⚙️ <strong>Firebase not configured.</strong> Running in local-only demo mode — changes are saved to this browser only and won't sync across devices.
+    &nbsp;<a href="https://console.firebase.google.com" target="_blank">Set up Firebase →</a>
+    &nbsp;then paste your config into the <code>FIREBASE_CONFIG</code> block at the top of index.html.
+  </div>
+
+  <div class="header">
+    <div class="header-left">
+      <h1>NP Digital — Client Onboarding Workflows</h1>
+      <p>SEO · Paid Media · Email Marketing &nbsp;|&nbsp; Risk Management Reference</p>
+    </div>
+    <div class="header-right">
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#F59E0B"></div>SEO</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#8B5CF6"></div>Paid</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#10B981"></div>Email</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#D1D5DB;border:1.5px solid #6B7280"></div>Not started</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3B82F6"></div>In progress</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#10B981"></div>Complete</div>
+      </div>
+      <div class="user-pill" id="user-pill">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div class="user-info">
+          <div class="user-email" id="user-email-display">—</div>
+          <div class="user-role-badge" id="user-role-display">—</div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+
+  <div class="perm-banner" id="perm-banner">
+    <span class="sync-dot" id="sync-dot"></span>
+    <span id="perm-text">Loading…</span>
+  </div>
+
+  <div class="toolbar">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-btn active" onclick="filterChannel('all',this)">All Channels</button>
+    <button class="filter-btn" onclick="filterChannel('seo',this)">SEO Only</button>
+    <button class="filter-btn" onclick="filterChannel('paid',this)">Paid Media Only</button>
+    <button class="filter-btn" onclick="filterChannel('email',this)">Email Only</button>
+    <div class="toolbar-sep"></div>
+    <button class="tool-btn" onclick="exportJSON()" id="btn-export">⬇ Export JSON</button>
+    <label class="tool-btn" style="cursor:pointer" id="btn-import">⬆ Import JSON<input type="file" accept=".json" style="display:none" onchange="importJSON(event)"></label>
+    <button class="tool-btn danger" onclick="resetDefaults()" id="btn-reset">↺ Reset to Defaults</button>
+    <div class="toolbar-sep" id="admin-sep" style="display:none"></div>
+    <button class="tool-btn" onclick="openAdmin()" id="btn-admin" style="display:none">👥 Manage Users</button>
+  </div>
+
+  <div class="board-title-row">
+    <div><h2>Swimlane View — Phases 1–7</h2><p id="board-hint">Click any card to view details</p></div>
+    <div style="font-size:12px;color:#9CA3AF" id="sync-label"></div>
+  </div>
+
+  <div class="board">
+    <div class="board-inner" id="board"></div>
+  </div>
+</div>
+
+<!-- ── CARD MODAL ───────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-channel-bar">
+      <div class="modal-channel" id="m-channel"></div>
+      <button class="modal-mode-toggle" id="m-toggle" onclick="toggleModalMode()">✎ Edit</button>
+    </div>
+    <div id="modal-view">
+      <div class="modal-title-display" id="m-title"></div>
+      <div class="modal-row"><div class="modal-label">👤 Owner</div><div class="modal-value" id="m-owner"></div></div>
+      <div class="modal-row"><div class="modal-label">📅 Due Offset</div><div class="modal-value" id="m-offset"></div></div>
+      <div class="modal-row"><div class="modal-label">🔗 Dependency</div><div class="modal-value" id="m-dep"></div></div>
+      <div class="modal-row"><div class="modal-label">⚡ Automation</div><div class="modal-value" id="m-auto"></div></div>
+      <div class="modal-row"><div class="modal-label">📋 Description</div><div class="modal-value" id="m-desc"></div></div>
+      <div class="modal-risk" id="m-risk"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+        <button class="btn btn-primary" id="view-edit-btn" onclick="toggleModalMode()">✎ Edit Card</button>
+      </div>
+    </div>
+    <div id="modal-edit" style="display:none">
+      <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="e-title" type="text"></div>
+      <div class="form-group"><label class="form-label">Owner</label><input class="form-input" id="e-owner" type="text"></div>
+      <div class="form-group"><label class="form-label">Due Offset</label><input class="form-input" id="e-offset" type="text" placeholder="e.g. Day 5"></div>
+      <div class="form-group"><label class="form-label">Dependency</label><input class="form-input" id="e-dep" type="text"></div>
+      <div class="form-group"><label class="form-label">Automation Opportunity</label><input class="form-input" id="e-auto" type="text"></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="e-desc"></textarea></div>
+      <div class="form-group"><label class="form-label">Risk Flag</label><input class="form-input" id="e-risk" type="text"></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="saveCard()">Save Changes</button>
+        <button class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
+        <button class="btn btn-danger" id="delete-btn" onclick="deleteCard()">Delete Card</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADMIN PANEL MODAL ─────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="admin-modal" onclick="if(event.target.id==='admin-modal')closeAdmin()">
+  <div class="modal admin-modal" onclick="event.stopPropagation()">
+    <div class="admin-title">👥 User Management</div>
+    <div class="admin-subtitle">Manage who can access the board and what they can do.</div>
+    <div class="admin-section-title">Current Users</div>
+    <table class="user-table">
+      <thead><tr><th>User</th><th>Role</th><th>Status</th><th></th></tr></thead>
+      <tbody id="admin-user-list"></tbody>
+    </table>
+    <div class="admin-section-title">Role Permissions</div>
+    <table class="user-table">
+      <thead><tr><th>Role</th><th>View</th><th>Edit Cards</th><th>Add / Delete</th><th>Manage Users</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Viewer</strong></td><td>✓</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td><strong>Editor</strong></td><td>✓</td><td>✓</td><td>—</td><td>—</td></tr>
+        <tr><td><strong>Manager</strong></td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+        <tr><td><strong>Admin</strong></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+      </tbody>
+    </table>
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn btn-secondary" onclick="closeAdmin()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ── FIREBASE SDK ──────────────────────────────────────────────────────── -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// PERMISSION MODEL
+// ═══════════════════════════════════════════════════════════════════════════
+const ROLES = {
+  viewer:  { label: 'Viewer',  canEdit: false, canManage: false, canAdmin: false, color: '#9CA3AF' },
+  editor:  { label: 'Editor',  canEdit: true,  canManage: false, canAdmin: false, color: '#34D399' },
+  manager: { label: 'Manager', canEdit: true,  canManage: true,  canAdmin: false, color: '#A78BFA' },
+  admin:   { label: 'Admin',   canEdit: true,  canManage: true,  canAdmin: true,  color: '#F59E0B' },
+};
+
+const PERM_HINTS = {
+  viewer:  'View only — contact an admin to request editing access.',
+  editor:  'Editor — you can edit cards and update status.',
+  manager: 'Manager — you can edit cards, add/delete cards, and edit headers.',
+  admin:   'Admin — full access including user management.',
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DEFAULT DATA
+// ═══════════════════════════════════════════════════════════════════════════
+const STORAGE_KEY = 'npd_onboarding_v1';
+
+const DEFAULT_PHASES = [
+  { id:'p1', name:'Contract & Internal Alignment', days:'Day 0–2' },
+  { id:'p2', name:'Kickoff Preparation',            days:'Day 2–5' },
+  { id:'p3', name:'Kickoff Execution',              days:'Day 7–8' },
+  { id:'p4', name:'Audit & Strategy',               days:'Day 10–15' },
+  { id:'p5', name:'Roadmap Presentation',           days:'Day 16–20' },
+  { id:'p6', name:'Execution Launch',               days:'Day 21–25' },
+  { id:'p7', name:'30/60/90 Day Reviews',           days:'Day 51–111' },
+];
+const DEFAULT_SWIMLANES = [
+  { id:'seo',   name:'SEO',             tag:'Phases 1–4', activePhases:['p1','p2','p3','p4'] },
+  { id:'paid',  name:'Paid Media',      tag:'Phases 1–7', activePhases:['p1','p2','p3','p4','p5','p6','p7'] },
+  { id:'email', name:'Email Marketing', tag:'Phases 1–7', activePhases:['p1','p2','p3','p4','p5','p6','p7'] },
+];
+const DEFAULT_KPIS = {
+  'seo-p1':'All internal tasks and workspace set up within 2 days of contract close.',
+  'seo-p2':'All access requests sent and agenda finalized before kickoff.',
+  'seo-p3':'Client confirms next steps within 1 day of kickoff.',
+  'seo-p4':'Full strategy draft reviewed internally before Strategy Call.',
+  'paid-p1':'Workspace set up within 2 days of contract close.',
+  'paid-p2':'Access requests sent and agenda finalized before kickoff.',
+  'paid-p3':'Client confirms next steps within 1 day of kickoff.',
+  'paid-p4':'Audit and draft strategy delivered within 2 weeks of kickoff.',
+  'paid-p5':'Client signs off on roadmap within 3 days of presentation.',
+  'paid-p6':'All roadmap tasks started within 1 week of client sign-off.',
+  'paid-p7':'Positive trend in agreed KPIs at each review milestone.',
+  'email-p1':'Workspace set up within 2 days of contract close.',
+  'email-p2':'Access requests sent and agenda finalized before kickoff.',
+  'email-p3':'Client confirms next steps within 1 day of kickoff.',
+  'email-p4':'Audit and draft strategy delivered within 2 weeks of kickoff.',
+  'email-p5':'Client signs off on roadmap within 3 days of presentation.',
+  'email-p6':'All roadmap tasks started within 1 week of client sign-off.',
+  'email-p7':'Positive trend in agreed KPIs at each review milestone.',
+};
+const DEFAULT_CARDS = [
+  {id:'c1', lane:'seo',phase:'p1',title:'Contract Review & Handover',owner:'AE / Account Manager',offset:'Day 0',dep:'Contract signature',auto:'Auto-create onboarding task list on signature',risk:'Misalignment on scope',desc:'Review signed contract, confirm scope, deliverables, and key contacts.',status:'not-started'},
+  {id:'c2', lane:'seo',phase:'p1',title:'Internal Kickoff Meeting',owner:'AM, Strategists, AE',offset:'Day 1',dep:'Contract review complete',auto:'Auto-schedule meeting on calendar availability',risk:'Schedule conflicts',desc:'Align on client goals, assign roles, review timelines.',status:'not-started'},
+  {id:'c3', lane:'seo',phase:'p1',title:'Client Folder & Project Setup',owner:'Project Management',offset:'Day 2',dep:'Internal kickoff',auto:'Template-based folder/list creation from SOW',risk:'Missing documentation or access',desc:'Set up ClickUp project and client site.',status:'not-started'},
+  {id:'c4', lane:'seo',phase:'p2',title:'Kickoff Agenda Drafting',owner:'Account Manager',offset:'Day 2',dep:'Internal alignment',auto:'Agenda template auto-population',risk:'Agenda lacks clarity or detail',desc:'Draft and circulate kickoff agenda and Welcome Call Deck.',status:'not-started'},
+  {id:'c5', lane:'seo',phase:'p2',title:'Access Request Email',owner:'Destiny / PM',offset:'Day 3',dep:'Contract signature',auto:'Automated email trigger & access instructions',risk:'Delayed access',desc:'Send client a standardized access request for analytics, CMS, GSC, etc.',status:'not-started'},
+  {id:'c6', lane:'seo',phase:'p2',title:'Preliminary Data Pull',owner:'Account Manager',offset:'Day 5',dep:'Access received',auto:'Data connector integration',risk:'Incomplete data / incorrect setup',desc:'Pull baseline analytics and rankings for kickoff context.',status:'not-started'},
+  {id:'c7', lane:'seo',phase:'p3',title:'Kickoff Meeting',owner:'AM, SEO Strategist, Client',offset:'Day 7',dep:'Agenda & access sent',auto:'Calendar invite automation',risk:'Stakeholder no-shows',desc:'Conduct kickoff, review goals, confirm access, set expectations.',status:'not-started'},
+  {id:'c8', lane:'seo',phase:'p3',title:'Kickoff Recap & Action Items',owner:'Account Manager',offset:'Day 8',dep:'Welcome Call complete',auto:'Recap template auto-fill',risk:'Unclear next steps',desc:'Send recap email with action items and timeline.',status:'not-started'},
+  {id:'c9', lane:'seo',phase:'p4',title:'Technical SEO Audit',owner:'Analyst',offset:'Day 10',dep:'Site & analytics access',auto:'Automated audit tool integration',risk:'Incomplete access',desc:'Complete technical site audit using standard tools.',status:'not-started'},
+  {id:'c10',lane:'seo',phase:'p4',title:'Content & Keyword Audits',owner:'SEO Strategist',offset:'Day 12',dep:'Technical audit',auto:'Keyword research tool integration',risk:'Outdated data',desc:'Analyze content gaps and keyword opportunities.',status:'not-started'},
+  {id:'c11',lane:'seo',phase:'p4',title:'Competitive Benchmarking',owner:'Analyst',offset:'Day 13',dep:'Content audit',auto:'Automated competitor data pulls',risk:'Inaccurate competitor selection',desc:'Benchmark client vs. top 3 competitors.',status:'not-started'},
+  {id:'c12',lane:'seo',phase:'p4',title:'Strategy Drafting',owner:'SEO Strategist',offset:'Day 15',dep:'All audits complete',auto:'Strategy template population',risk:'Strategy misaligned with client goals',desc:'Draft strategy document with prioritized recommendations.',status:'not-started'},
+  {id:'c13',lane:'paid',phase:'p1',title:'Contract Review & Handover',owner:'AE / Account Manager',offset:'Day 0',dep:'Contract signature',auto:'Auto-create onboarding task list on signature',risk:'Misalignment on scope',desc:'Review signed contract, confirm scope, deliverables, and key contacts.',status:'not-started'},
+  {id:'c14',lane:'paid',phase:'p1',title:'Internal Kickoff Meeting',owner:'AM, Paid Media Strategists, AE',offset:'Day 1',dep:'Contract review complete',auto:'Auto-schedule meeting',risk:'Schedule conflicts',desc:'Align on client goals, assign roles, review timelines.',status:'not-started'},
+  {id:'c15',lane:'paid',phase:'p1',title:'Client Folder & Project Setup',owner:'Project Management',offset:'Day 2',dep:'Internal kickoff',auto:'Template-based folder/list creation',risk:'Missing documentation or access',desc:'Set up ClickUp project, client folder.',status:'not-started'},
+  {id:'c16',lane:'paid',phase:'p2',title:'Kickoff Agenda Drafting',owner:'Account Manager',offset:'Day 2',dep:'Internal alignment',auto:'Agenda template auto-population',risk:'Agenda lacks clarity',desc:'Draft and circulate kickoff agenda and Welcome Call Deck.',status:'not-started'},
+  {id:'c17',lane:'paid',phase:'p2',title:'Access Request Email',owner:'Project Management',offset:'Day 3',dep:'Contract signature',auto:'Automated email trigger',risk:'Delayed access',desc:'Send client access request for ad accounts, analytics, tag manager.',status:'not-started'},
+  {id:'c18',lane:'paid',phase:'p2',title:'Preliminary Data Pull',owner:'Account Manager',offset:'Day 5',dep:'Access received',auto:'Data connector integration',risk:'Incomplete data',desc:'Pull baseline spend, performance, and conversion data.',status:'not-started'},
+  {id:'c19',lane:'paid',phase:'p3',title:'Kickoff Meeting',owner:'AD, Paid Media Strategist, Client',offset:'Day 7',dep:'Agenda & access sent',auto:'Calendar invite automation',risk:'Stakeholder no-shows',desc:'Conduct kickoff, review goals, confirm access, set expectations.',status:'not-started'},
+  {id:'c20',lane:'paid',phase:'p3',title:'Kickoff Recap & Action Items',owner:'Account Manager',offset:'Day 8',dep:'Welcome Call',auto:'Recap template auto-fill',risk:'Unclear next steps',desc:'Send recap email with action items and timeline.',status:'not-started'},
+  {id:'c21',lane:'paid',phase:'p4',title:'Account & Campaign Audits',owner:'Analyst',offset:'Day 10',dep:'Ad account access',auto:'Automated audit tool integration',risk:'Incomplete access',desc:'Complete ad account and campaign audit using standard tools.',status:'not-started'},
+  {id:'c22',lane:'paid',phase:'p4',title:'Audience & Creative Review',owner:'Paid Media Strategist',offset:'Day 12',dep:'Account audit',auto:'Creative asset inventory automation',risk:'Missing assets',desc:'Analyze audience segments and creative assets.',status:'not-started'},
+  {id:'c23',lane:'paid',phase:'p4',title:'Competitive Benchmarking',owner:'Analyst',offset:'Day 13',dep:'Audience review',auto:'Automated competitor data pulls',risk:'Inaccurate competitor selection',desc:'Benchmark client vs. top 3 competitors.',status:'not-started'},
+  {id:'c24',lane:'paid',phase:'p4',title:'Strategy Drafting',owner:'Paid Media Strategist',offset:'Day 15',dep:'All audits complete',auto:'Strategy template population',risk:'Strategy misaligned with client goals',desc:'Draft strategy document with prioritized recommendations.',status:'not-started'},
+  {id:'c25',lane:'paid',phase:'p5',title:'Internal Roadmap Review',owner:'AD, Paid Media Strategist, QA',offset:'Day 16',dep:'Strategy drafted',auto:'Checklist-driven QA',risk:'Missed errors',desc:'Review strategy for accuracy and completeness.',status:'not-started'},
+  {id:'c26',lane:'paid',phase:'p5',title:'Client Roadmap Presentation',owner:'Paid Media Strategist, AD, Client',offset:'Day 18',dep:'Internal review',auto:'Calendar invite automation',risk:'Client pushback',desc:'Present roadmap, answer questions, confirm priorities.',status:'not-started'},
+  {id:'c27',lane:'paid',phase:'p5',title:'Feedback Incorporation',owner:'Paid Media Strategist',offset:'Day 20',dep:'Client presentation',auto:'Feedback form integration',risk:'Delayed feedback',desc:'Update roadmap based on client feedback.',status:'not-started'},
+  {id:'c28',lane:'paid',phase:'p6',title:'Task Assignment & Scheduling',owner:'Account Director, Analyst',offset:'Day 21',dep:'Roadmap approval',auto:'Task auto-assignment from roadmap',risk:'Resource bottlenecks',desc:'Assign tasks in ClickUp, set deadlines, notify team.',status:'not-started'},
+  {id:'c29',lane:'paid',phase:'p6',title:'Implementation Kickoff',owner:'Analyst, Paid Media Strategist',offset:'Day 22',dep:'Task assignment',auto:'Automated task reminders',risk:'Missed deadlines',desc:'Begin campaign optimizations per roadmap.',status:'not-started'},
+  {id:'c30',lane:'paid',phase:'p6',title:'QA & Validation',owner:'QA',offset:'Day 25',dep:'Implementation tasks',auto:'QA checklist automation',risk:'Quality issues',desc:'Review completed work for accuracy and impact.',status:'not-started'},
+  {id:'c31',lane:'paid',phase:'p7',title:'30-Day Review',owner:'Analyst',offset:'Day 51',dep:'30 days post-launch',auto:'Automated reporting',risk:'Underperformance',desc:'Report on initial KPIs, identify quick wins and issues.',status:'not-started'},
+  {id:'c32',lane:'paid',phase:'p7',title:'60-Day Review',owner:'Paid Media Strategist',offset:'Day 81',dep:'60 days post-launch',auto:'Scheduled review reminders',risk:'Lack of progress',desc:'Assess progress, adjust tactics as needed.',status:'not-started'},
+  {id:'c33',lane:'paid',phase:'p7',title:'90-Day Review & Retention Check',owner:'Account Director, Client',offset:'Day 111',dep:'90 days post-launch',auto:'Automated meeting scheduling',risk:'Client dissatisfaction',desc:'Present results, discuss next steps, address retention risks.',status:'not-started'},
+  {id:'c34',lane:'email',phase:'p1',title:'Contract Review & Handover',owner:'AE / Account Manager',offset:'Day 0',dep:'Contract signature',auto:'Auto-create onboarding task list on signature',risk:'Misalignment on scope',desc:'Review signed contract, confirm scope, deliverables, and key contacts.',status:'not-started'},
+  {id:'c35',lane:'email',phase:'p1',title:'Internal Kickoff Meeting',owner:'AM, Email Strategists, AE',offset:'Day 1',dep:'Contract review complete',auto:'Auto-schedule meeting',risk:'Schedule conflicts',desc:'Align on client goals, assign roles, review timelines.',status:'not-started'},
+  {id:'c36',lane:'email',phase:'p1',title:'Client Folder & Project Setup',owner:'Project Management',offset:'Day 2',dep:'Internal kickoff',auto:'Template-based folder/list creation',risk:'Missing documentation or access',desc:'Set up ClickUp project, client folder.',status:'not-started'},
+  {id:'c37',lane:'email',phase:'p2',title:'Kickoff Agenda Drafting',owner:'Account Manager',offset:'Day 2',dep:'Internal alignment',auto:'Agenda template auto-population',risk:'Agenda lacks clarity',desc:'Draft and circulate kickoff agenda and Welcome Call Deck.',status:'not-started'},
+  {id:'c38',lane:'email',phase:'p2',title:'Access Request Email',owner:'Project Management',offset:'Day 3',dep:'Contract signature',auto:'Automated email trigger',risk:'Delayed access',desc:'Send client access request for ESP, analytics, CRM, etc.',status:'not-started'},
+  {id:'c39',lane:'email',phase:'p2',title:'Preliminary Data Pull',owner:'Strategist',offset:'Day 5',dep:'Access received',auto:'Data connector integration',risk:'Incomplete data',desc:'Pull baseline list health, engagement, and deliverability data.',status:'not-started'},
+  {id:'c40',lane:'email',phase:'p3',title:'Kickoff Meeting',owner:'AD, Email Strategist, Client',offset:'Day 7',dep:'Agenda & access sent',auto:'Calendar invite automation',risk:'Stakeholder no-shows',desc:'Conduct kickoff, review goals, confirm access, set expectations.',status:'not-started'},
+  {id:'c41',lane:'email',phase:'p3',title:'Kickoff Recap & Action Items',owner:'Account Manager',offset:'Day 8',dep:'Welcome Call',auto:'Recap template auto-fill',risk:'Unclear next steps',desc:'Send recap email with action items and timeline.',status:'not-started'},
+  {id:'c42',lane:'email',phase:'p4',title:'ESP & List Audits',owner:'Analyst',offset:'Day 10',dep:'ESP & analytics access',auto:'Automated audit tool integration',risk:'Incomplete access',desc:'Complete ESP and list audit using standard tools.',status:'not-started'},
+  {id:'c43',lane:'email',phase:'p4',title:'Content & Journey Review',owner:'Email Strategist',offset:'Day 12',dep:'ESP audit',auto:'Journey mapping automation',risk:'Missing content',desc:'Analyze content gaps and customer journey opportunities.',status:'not-started'},
+  {id:'c44',lane:'email',phase:'p4',title:'Competitive Benchmarking',owner:'Analyst',offset:'Day 13',dep:'Content review',auto:'Automated competitor data pulls',risk:'Inaccurate competitor selection',desc:'Benchmark client vs. top 3 competitors.',status:'not-started'},
+  {id:'c45',lane:'email',phase:'p4',title:'Strategy Drafting',owner:'Email Strategist',offset:'Day 15',dep:'All audits complete',auto:'Strategy template population',risk:'Strategy misaligned with client goals',desc:'Draft strategy document with prioritized recommendations.',status:'not-started'},
+  {id:'c46',lane:'email',phase:'p5',title:'Internal Roadmap Review',owner:'AD, Email Strategist, QA',offset:'Day 16',dep:'Strategy drafted',auto:'Checklist-driven QA',risk:'Missed errors',desc:'Review strategy for accuracy and completeness.',status:'not-started'},
+  {id:'c47',lane:'email',phase:'p5',title:'Client Roadmap Presentation',owner:'Email Strategist, AD, Client',offset:'Day 18',dep:'Internal review',auto:'Calendar invite automation',risk:'Client pushback',desc:'Present roadmap, answer questions, confirm priorities.',status:'not-started'},
+  {id:'c48',lane:'email',phase:'p5',title:'Feedback Incorporation',owner:'Email Strategist',offset:'Day 20',dep:'Client presentation',auto:'Feedback form integration',risk:'Delayed feedback',desc:'Update roadmap based on client feedback.',status:'not-started'},
+  {id:'c49',lane:'email',phase:'p6',title:'Task Assignment & Scheduling',owner:'Account Director, Analyst',offset:'Day 21',dep:'Roadmap approval',auto:'Task auto-assignment from roadmap',risk:'Resource bottlenecks',desc:'Assign tasks in ClickUp, set deadlines, notify team.',status:'not-started'},
+  {id:'c50',lane:'email',phase:'p6',title:'Implementation Kickoff',owner:'Analyst, Email Strategist',offset:'Day 22',dep:'Task assignment',auto:'Automated task reminders',risk:'Missed deadlines',desc:'Begin campaign and journey optimizations per roadmap.',status:'not-started'},
+  {id:'c51',lane:'email',phase:'p6',title:'QA & Validation',owner:'QA',offset:'Day 25',dep:'Implementation tasks',auto:'QA checklist automation',risk:'Quality issues',desc:'Review completed work for accuracy and impact.',status:'not-started'},
+  {id:'c52',lane:'email',phase:'p7',title:'30-Day Review',owner:'Account Manager / GAD',offset:'Day 51',dep:'30 days post-launch',auto:'Automated reporting',risk:'Underperformance',desc:'Report on initial KPIs, identify quick wins and issues.',status:'not-started'},
+  {id:'c53',lane:'email',phase:'p7',title:'60-Day Review',owner:'Email Strategist',offset:'Day 81',dep:'60 days post-launch',auto:'Scheduled review reminders',risk:'Lack of progress',desc:'Assess progress, adjust tactics as needed.',status:'not-started'},
+  {id:'c54',lane:'email',phase:'p7',title:'90-Day Review & Retention Check',owner:'AD / GAD, Client',offset:'Day 111',dep:'90 days post-launch',auto:'Automated meeting scheduling',risk:'Client dissatisfaction',desc:'Present results, discuss next steps, address retention risks.',status:'not-started'},
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// APP STATE
+// ═══════════════════════════════════════════════════════════════════════════
+let state = getDefaultState();
+let currentUser = null;   // Firebase auth user
+let currentRole = 'viewer';
+let allUsers = {};        // uid → {email, displayName, role}
+let db = null;
+let auth = null;
+let boardRef = null;
+let usersRef = null;
+let modalCardId = null;
+let modalIsNew = false;
+let modalNewLane = null;
+let modalNewPhase = null;
+let dragSrcId = null;
+let _nextId = 200;
+
+function uid() { return 'c' + (_nextId++); }
+function getDefaultState() {
+  return {
+    phases: JSON.parse(JSON.stringify(DEFAULT_PHASES)),
+    swimlanes: JSON.parse(JSON.stringify(DEFAULT_SWIMLANES)),
+    cards: JSON.parse(JSON.stringify(DEFAULT_CARDS)),
+    kpis: JSON.parse(JSON.stringify(DEFAULT_KPIS)),
+  };
+}
+
+function perms() { return ROLES[currentRole] || ROLES.viewer; }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FIREBASE INIT
+// ═══════════════════════════════════════════════════════════════════════════
+function initFirebase() {
+  if (!FIREBASE_ENABLED) {
+    document.getElementById('setup-banner').style.display = 'flex';
+    showScreen('login');
+    return;
+  }
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    auth = firebase.auth();
+    db = firebase.database();
+    boardRef = db.ref('board');
+    usersRef = db.ref('users');
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        loadUserRole(user.uid);
+      } else {
+        currentUser = null;
+        currentRole = 'viewer';
+        showScreen('login');
+      }
+    });
+  } catch(e) {
+    console.error('Firebase init error:', e);
+    document.getElementById('setup-banner').style.display = 'flex';
+    showScreen('login');
+  }
+}
+
+function loadUserRole(uid) {
+  usersRef.child(uid).once('value', snap => {
+    const data = snap.val();
+    if (!data) {
+      // First login — create viewer record
+      const record = { email: currentUser.email, displayName: currentUser.displayName || currentUser.email.split('@')[0], role: 'viewer' };
+      usersRef.child(uid).set(record);
+      currentRole = 'viewer';
+    } else {
+      currentRole = data.role || 'viewer';
+    }
+    onAuthenticated();
+  });
+}
+
+function onAuthenticated() {
+  showApp();
+  loadUsers();
+  // Listen for board changes from all users
+  boardRef.on('value', snap => {
+    const data = snap.val();
+    if (data) {
+      state = data;
+      // ensure arrays not null
+      if (!state.cards) state.cards = [];
+      if (!state.phases) state.phases = DEFAULT_PHASES.slice();
+      if (!state.swimlanes) state.swimlanes = DEFAULT_SWIMLANES.slice();
+      if (!state.kpis) state.kpis = {};
+    }
+    render();
+    setSyncDot(false);
+  }, err => {
+    console.error('Board read error:', err);
+    toast('Sync error — check your connection');
+  });
+}
+
+function loadUsers() {
+  if (!usersRef) return;
+  usersRef.on('value', snap => {
+    allUsers = snap.val() || {};
+    if (perms().canAdmin) renderAdminUsers();
+  });
+}
+
+function save() {
+  if (!FIREBASE_ENABLED || !boardRef) {
+    // fallback: localStorage
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    return;
+  }
+  setSyncDot(true);
+  boardRef.set(state).catch(err => {
+    toast('Save failed: ' + err.message);
+    setSyncDot(false);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// AUTH ACTIONS
+// ═══════════════════════════════════════════════════════════════════════════
+function showScreen(name) {
+  ['login','register'].forEach(s => {
+    document.getElementById('screen-' + s).classList.toggle('visible', s === name);
+  });
+  document.getElementById('app').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('screen-login').classList.remove('visible');
+  document.getElementById('screen-register').classList.remove('visible');
+  document.getElementById('app').style.display = '';
+  updateUserUI();
+  updatePermUI();
+  if (!FIREBASE_ENABLED) {
+    // local demo: load from localStorage
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) state = JSON.parse(saved);
+    } catch(e) {}
+    render();
+  }
+}
+
+function updateUserUI() {
+  if (!currentUser) return;
+  const email = currentUser.email || '';
+  const initials = (currentUser.displayName || email).substring(0,2).toUpperCase();
+  document.getElementById('user-avatar').textContent = initials;
+  document.getElementById('user-email-display').textContent = email;
+  const roleInfo = ROLES[currentRole];
+  const el = document.getElementById('user-role-display');
+  el.textContent = roleInfo ? roleInfo.label : currentRole;
+  el.style.color = roleInfo ? roleInfo.color : '#9CA3AF';
+}
+
+function updatePermUI() {
+  const p = perms();
+  document.getElementById('perm-text').textContent = PERM_HINTS[currentRole] || '';
+  document.getElementById('btn-export').disabled = false;
+  document.getElementById('btn-reset').disabled = !p.canAdmin;
+  document.getElementById('btn-admin').style.display = p.canAdmin ? '' : 'none';
+  document.getElementById('admin-sep').style.display = p.canAdmin ? '' : 'none';
+  const importLabel = document.getElementById('btn-import');
+  if (!p.canManage) { importLabel.style.opacity = '.4'; importLabel.style.pointerEvents = 'none'; }
+  else { importLabel.style.opacity = ''; importLabel.style.pointerEvents = ''; }
+
+  const hint = p.canManage ? 'Click card to view/edit · Drag to move · Double-click headers to edit · Dot = status'
+             : p.canEdit  ? 'Click card to view/edit · Dot = status — header/add/delete editing requires Manager role'
+             : 'View only — click any card to see details';
+  document.getElementById('board-hint').textContent = hint;
+
+  if (FIREBASE_ENABLED) document.getElementById('sync-label').textContent = '● Live sync on';
+}
+
+function setSyncDot(syncing) {
+  document.getElementById('sync-dot').classList.toggle('syncing', syncing);
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.classList.remove('show');
+
+  if (!FIREBASE_ENABLED) {
+    // demo mode: any login works, set role based on known demo emails
+    currentUser = { email, displayName: email.split('@')[0] };
+    currentRole = 'admin'; // demo mode gives full access
+    showApp();
+    return;
+  }
+
+  auth.signInWithEmailAndPassword(email, pass)
+    .catch(err => { errEl.textContent = friendlyAuthError(err.code); errEl.classList.add('show'); });
+}
+
+function doRegister() {
+  const name  = document.getElementById('register-name').value.trim();
+  const email = document.getElementById('register-email').value.trim();
+  const pass  = document.getElementById('register-password').value;
+  const errEl = document.getElementById('register-error');
+  errEl.classList.remove('show');
+
+  if (!name) { errEl.textContent = 'Please enter your full name.'; errEl.classList.add('show'); return; }
+  if (pass.length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.classList.add('show'); return; }
+
+  if (!FIREBASE_ENABLED) {
+    currentUser = { email, displayName: name };
+    currentRole = 'viewer';
+    showApp();
+    return;
+  }
+
+  auth.createUserWithEmailAndPassword(email, pass)
+    .then(cred => cred.user.updateProfile({ displayName: name }))
+    .catch(err => { errEl.textContent = friendlyAuthError(err.code); errEl.classList.add('show'); });
+}
+
+function doLogout() {
+  if (auth) { auth.signOut(); }
+  else { showScreen('login'); }
+}
+
+function friendlyAuthError(code) {
+  const map = {
+    'auth/user-not-found': 'No account found with that email.',
+    'auth/wrong-password': 'Incorrect password.',
+    'auth/email-already-in-use': 'An account with this email already exists.',
+    'auth/weak-password': 'Password is too weak.',
+    'auth/invalid-email': 'Please enter a valid email address.',
+    'auth/too-many-requests': 'Too many attempts. Please try again later.',
+  };
+  return map[code] || 'Something went wrong. Please try again.';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════════════
+const LANE_LABELS = { seo:'SEO', paid:'Paid Media', email:'Email' };
+const LANE_COLORS = { seo:'#F59E0B', paid:'#8B5CF6', email:'#10B981' };
+
+function render() {
+  const board = document.getElementById('board');
+  const gridCols = `140px repeat(${state.phases.length}, 1fr)`;
+  const p = perms();
+  const ro = p.canManage ? '' : 'data-readonly';
+
+  let html = `<div class="phase-header-row" style="grid-template-columns:${gridCols}">`;
+  html += `<div class="corner">Channel</div>`;
+  state.phases.forEach((ph, i) => {
+    html += `<div class="phase-col-header">
+      <div class="phase-num">Phase ${i+1}</div>
+      <div class="phase-name" contenteditable="${p.canManage}" data-editable ${ro} onblur="saveHeaderEdit(this,'name','${ph.id}')">${esc(ph.name)}</div>
+      <div class="phase-days" contenteditable="${p.canManage}" data-editable ${ro} onblur="saveHeaderEdit(this,'days','${ph.id}')">${esc(ph.days)}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  state.swimlanes.forEach(lane => {
+    html += `<div class="swimlane ${lane.id}" id="row-${lane.id}" style="grid-template-columns:${gridCols}">`;
+    html += `<div class="lane-label">
+      <div class="channel-name" contenteditable="${p.canManage}" data-editable ${ro} onblur="saveLaneEdit(this,'name','${lane.id}')">${esc(lane.name)}</div>
+      <div class="channel-tag"  contenteditable="${p.canManage}" data-editable ${ro} onblur="saveLaneEdit(this,'tag','${lane.id}')">${esc(lane.tag)}</div>
+    </div>`;
+
+    state.phases.forEach(ph => {
+      const isActive = lane.activePhases.includes(ph.id);
+      const kpiKey   = `${lane.id}-${ph.id}`;
+      const kpiText  = state.kpis[kpiKey] || '';
+      const cards    = state.cards.filter(c => c.lane === lane.id && c.phase === ph.id);
+
+      if (!isActive) {
+        html += `<div class="phase-cell empty-placeholder"><span style="font-size:11px;color:#D1D5DB;">${esc(lane.name)}: ${lane.activePhases.length} phases</span></div>`;
+      } else {
+        html += `<div class="phase-cell" data-lane="${lane.id}" data-phase="${ph.id}" ondragover="dragOver(event)" ondrop="drop(event)" ondragleave="dragLeave(event)">`;
+        cards.forEach(c => { html += renderCard(c, p); });
+        if (kpiText) {
+          html += `<div class="kpi-badge" contenteditable="${p.canManage}" data-editable ${ro} data-kpi="${kpiKey}" onblur="saveKpi(this,'${kpiKey}')">${esc(kpiText)}</div>`;
+        }
+        if (p.canManage) {
+          html += `<button class="add-card-btn" onclick="openNewCard('${lane.id}','${ph.id}')">+ Add Card</button>`;
+        }
+        html += '</div>';
+      }
+    });
+    html += '</div>';
+  });
+
+  board.innerHTML = html;
+  applyCurFilter();
+}
+
+function renderCard(card, p) {
+  const canDrag = p.canEdit;
+  const statusClass = card.status || 'not-started';
+  return `<div class="card" id="card-${card.id}" ${canDrag ? 'draggable="true"' : ''}
+    ${canDrag ? `ondragstart="dragStart(event,'${card.id}')" ondragend="dragEnd(event)"` : ''}
+    onclick="openCard('${card.id}')">
+    <div class="card-header">
+      <div class="card-title">${esc(card.title)}</div>
+      <div class="status-dot ${statusClass} ${p.canEdit ? 'clickable' : ''}" title="${p.canEdit ? 'Click to change status' : card.status}"
+        ${p.canEdit ? `onclick="event.stopPropagation();cycleStatus('${card.id}')"` : ''}></div>
+    </div>
+    <div class="card-offset">${esc(card.offset)}</div>
+    <div class="card-owner">👤 <span>${esc(card.owner)}</span></div>
+    <div class="card-dep">🔗 ${esc(card.dep)}</div>
+    <div class="card-risk">⚠ ${esc(card.risk)}</div>
+  </div>`;
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CARD MODAL
+// ═══════════════════════════════════════════════════════════════════════════
+function openCard(id) {
+  const card = state.cards.find(c => c.id === id);
+  if (!card) return;
+  modalCardId = id;
+  modalIsNew  = false;
+  showModalView(card);
+}
+
+function showModalView(card) {
+  const p = perms();
+  document.getElementById('m-channel').textContent = LANE_LABELS[card.lane] || card.lane;
+  document.getElementById('m-channel').style.color = LANE_COLORS[card.lane] || '#6B7280';
+  document.getElementById('m-title').textContent  = card.title;
+  document.getElementById('m-owner').textContent  = card.owner;
+  document.getElementById('m-offset').textContent = card.offset;
+  document.getElementById('m-dep').textContent    = card.dep;
+  document.getElementById('m-auto').textContent   = card.auto;
+  document.getElementById('m-desc').textContent   = card.desc;
+  document.getElementById('m-risk').textContent   = '⚠ Risk Flag: ' + card.risk;
+  document.getElementById('modal-view').style.display = '';
+  document.getElementById('modal-edit').style.display = 'none';
+  const toggle = document.getElementById('m-toggle');
+  const editBtn = document.getElementById('view-edit-btn');
+  if (p.canEdit) {
+    toggle.style.display = ''; toggle.textContent = '✎ Edit';
+    editBtn.style.display = '';
+  } else {
+    toggle.style.display = 'none';
+    editBtn.style.display = 'none';
+  }
+  document.getElementById('modal').classList.add('open');
+}
+
+function openNewCard(laneId, phaseId) {
+  modalCardId = null; modalIsNew = true; modalNewLane = laneId; modalNewPhase = phaseId;
+  document.getElementById('m-channel').textContent = LANE_LABELS[laneId] || laneId;
+  document.getElementById('m-channel').style.color = LANE_COLORS[laneId] || '#6B7280';
+  fillEditForm({});
+  document.getElementById('modal-view').style.display = 'none';
+  document.getElementById('modal-edit').style.display = '';
+  document.getElementById('m-toggle').style.display = 'none';
+  document.getElementById('delete-btn').style.display = 'none';
+  document.getElementById('modal').classList.add('open');
+}
+
+function toggleModalMode() {
+  const viewEl = document.getElementById('modal-view');
+  const editEl = document.getElementById('modal-edit');
+  const toggle = document.getElementById('m-toggle');
+  if (editEl.style.display === 'none') {
+    const card = state.cards.find(c => c.id === modalCardId);
+    if (!card) return;
+    fillEditForm(card);
+    viewEl.style.display = 'none'; editEl.style.display = '';
+    toggle.textContent = '← View';
+    document.getElementById('delete-btn').style.display = perms().canManage ? '' : 'none';
+  } else {
+    viewEl.style.display = ''; editEl.style.display = 'none';
+    toggle.textContent = '✎ Edit';
+  }
+}
+
+function fillEditForm(card) {
+  ['title','owner','offset','dep','auto','desc','risk'].forEach(f => {
+    const el = document.getElementById('e-' + f);
+    if (el) el.value = card[f] || '';
+  });
+}
+
+function saveCard() {
+  if (!perms().canEdit) { toast('You do not have permission to edit cards'); return; }
+  const updates = {};
+  ['title','owner','offset','dep','auto','desc','risk'].forEach(f => { updates[f] = document.getElementById('e-' + f).value.trim(); });
+  if (!updates.title) { toast('Title is required'); return; }
+  if (modalIsNew) {
+    if (!perms().canManage) { toast('Adding cards requires Manager access'); return; }
+    state.cards.push({ id: uid(), lane: modalNewLane, phase: modalNewPhase, status: 'not-started', ...updates });
+  } else {
+    const idx = state.cards.findIndex(c => c.id === modalCardId);
+    if (idx !== -1) Object.assign(state.cards[idx], updates);
+  }
+  save(); render(); closeModal(); toast(modalIsNew ? 'Card added' : 'Card saved');
+}
+
+function cancelEdit() {
+  if (modalIsNew) { closeModal(); return; }
+  const card = state.cards.find(c => c.id === modalCardId);
+  if (card) showModalView(card);
+  document.getElementById('m-toggle').style.display = '';
+}
+
+function deleteCard() {
+  if (!perms().canManage) { toast('Deleting cards requires Manager access'); return; }
+  if (!confirm('Delete this card? This cannot be undone.')) return;
+  state.cards = state.cards.filter(c => c.id !== modalCardId);
+  save(); render(); closeModal(); toast('Card deleted');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.getElementById('modal-view').style.display = '';
+  document.getElementById('modal-edit').style.display = 'none';
+  document.getElementById('m-toggle').textContent = '✎ Edit';
+  document.getElementById('m-toggle').style.display = '';
+  document.getElementById('delete-btn').style.display = '';
+  modalCardId = null; modalIsNew = false;
+}
+
+function handleOverlayClick(e) { if (e.target.id === 'modal') closeModal(); }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STATUS
+// ═══════════════════════════════════════════════════════════════════════════
+const STATUS_CYCLE = ['not-started','in-progress','complete'];
+
+function cycleStatus(id) {
+  if (!perms().canEdit) return;
+  const card = state.cards.find(c => c.id === id);
+  if (!card) return;
+  card.status = STATUS_CYCLE[(STATUS_CYCLE.indexOf(card.status) + 1) % STATUS_CYCLE.length];
+  save();
+  const dot = document.querySelector(`#card-${id} .status-dot`);
+  if (dot) dot.className = `status-dot ${card.status} clickable`;
+  toast({ 'not-started':'Not started', 'in-progress':'In progress', 'complete':'Complete' }[card.status]);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DRAG & DROP
+// ═══════════════════════════════════════════════════════════════════════════
+function dragStart(e, id) {
+  if (!perms().canEdit) return;
+  dragSrcId = id;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', id);
+  setTimeout(() => { const el = document.getElementById('card-'+id); if(el) el.classList.add('dragging'); }, 0);
+}
+function dragEnd() {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('dragging'));
+  document.querySelectorAll('.phase-cell').forEach(c => c.classList.remove('drag-over'));
+}
+function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function drop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  const id = e.dataTransfer.getData('text/plain');
+  const cell = e.currentTarget;
+  const newLane = cell.dataset.lane, newPhase = cell.dataset.phase;
+  if (!newLane || !newPhase) return;
+  const card = state.cards.find(c => c.id === id);
+  if (!card || (card.lane === newLane && card.phase === newPhase)) return;
+  card.lane = newLane; card.phase = newPhase;
+  save(); render(); toast('Card moved');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HEADER / KPI EDITING
+// ═══════════════════════════════════════════════════════════════════════════
+function saveHeaderEdit(el, field, phaseId) {
+  if (!perms().canManage) return;
+  const ph = state.phases.find(p => p.id === phaseId);
+  if (ph) { ph[field] = el.textContent.trim(); save(); }
+}
+function saveLaneEdit(el, field, laneId) {
+  if (!perms().canManage) return;
+  const lane = state.swimlanes.find(l => l.id === laneId);
+  if (lane) { lane[field] = el.textContent.trim(); save(); }
+}
+function saveKpi(el, key) {
+  if (!perms().canManage) return;
+  state.kpis[key] = el.textContent.trim(); save();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FILTER
+// ═══════════════════════════════════════════════════════════════════════════
+let curFilter = 'all';
+function filterChannel(ch, btn) {
+  curFilter = ch;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyCurFilter();
+}
+function applyCurFilter() {
+  ['seo','paid','email'].forEach(c => {
+    const row = document.getElementById('row-'+c);
+    if (row) row.style.display = (curFilter==='all'||curFilter===c) ? 'grid' : 'none';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// EXPORT / IMPORT / RESET
+// ═══════════════════════════════════════════════════════════════════════════
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'npd_onboarding_board.json'; a.click(); toast('Exported');
+}
+function importJSON(e) {
+  if (!perms().canManage) { toast('Import requires Manager access'); return; }
+  const file = e.target.files[0]; if(!file) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      if (!d.phases || !d.cards) throw new Error();
+      state = d; save(); render(); toast('Board imported');
+    } catch { toast('Import failed: invalid JSON'); }
+  };
+  r.readAsText(file); e.target.value = '';
+}
+function resetDefaults() {
+  if (!perms().canAdmin) { toast('Reset requires Admin access'); return; }
+  if (!confirm('Reset the board to original defaults? All edits will be lost.')) return;
+  state = getDefaultState(); save(); render(); toast('Reset to defaults');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ADMIN PANEL
+// ═══════════════════════════════════════════════════════════════════════════
+function openAdmin() {
+  if (!perms().canAdmin) return;
+  renderAdminUsers();
+  document.getElementById('admin-modal').classList.add('open');
+}
+function closeAdmin() { document.getElementById('admin-modal').classList.remove('open'); }
+
+function renderAdminUsers() {
+  const tbody = document.getElementById('admin-user-list');
+  const entries = Object.entries(allUsers);
+  if (!entries.length) { tbody.innerHTML = '<tr><td colspan="4" style="color:#9CA3AF;font-size:12px;padding:12px 8px">No users yet.</td></tr>'; return; }
+  tbody.innerHTML = entries.map(([uid, u]) => {
+    const isSelf = currentUser && uid === currentUser.uid;
+    const roleOpts = ['viewer','editor','manager','admin'].map(r =>
+      `<option value="${r}" ${u.role===r?'selected':''}>${ROLES[r].label}</option>`).join('');
+    return `<tr>
+      <td>
+        <div style="font-weight:600;font-size:12px">${esc(u.displayName||'')}</div>
+        <div style="font-size:11px;color:#6B7280">${esc(u.email||uid)}</div>
+      </td>
+      <td>
+        <select class="role-select" ${isSelf?'disabled':''} onchange="changeUserRole('${uid}',this.value)">${roleOpts}</select>
+      </td>
+      <td><span class="user-status-badge badge-active">Active</span></td>
+      <td>${isSelf ? '<span style="font-size:11px;color:#9CA3AF">(you)</span>' :
+        `<button class="remove-user-btn" onclick="removeUser('${uid}')">Remove</button>`}</td>
+    </tr>`;
+  }).join('');
+}
+
+function changeUserRole(uid, newRole) {
+  if (!usersRef) { toast('Firebase not connected'); return; }
+  usersRef.child(uid).update({ role: newRole })
+    .then(() => toast('Role updated'))
+    .catch(() => toast('Failed to update role'));
+}
+
+function removeUser(uid) {
+  if (!confirm('Remove this user from the board? They will see "Viewer" access if they log in again.')) return;
+  if (!usersRef) { toast('Firebase not connected'); return; }
+  usersRef.child(uid).remove().then(() => toast('User removed')).catch(() => toast('Failed to remove user'));
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════════════════
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════════════════════════
+initFirebase();
+</script>
+</body>
+</html>
