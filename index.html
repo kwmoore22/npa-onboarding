@@ -1506,7 +1506,7 @@ function activateCell(laneId, phaseId) {
 function switchTab(name) {
   document.getElementById('view-board').style.display  = name === 'board'  ? '' : 'none';
   document.getElementById('view-miro').style.display   = name === 'miro'   ? 'block' : 'none';
-  document.getElementById('view-access').style.display = name === 'access' ? '' : 'none';
+  document.getElementById('view-access').style.display = name === 'access' ? 'block' : 'none';
   document.getElementById('tab-board').classList.toggle('active',  name === 'board');
   document.getElementById('tab-miro').classList.toggle('active',   name === 'miro');
   document.getElementById('tab-access').classList.toggle('active', name === 'access');
