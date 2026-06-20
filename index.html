@@ -256,6 +256,90 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .view-tab.active { color: #111827; border-bottom-color: #3B82F6; font-weight: 600; }
 .miro-container { height: calc(100vh - 180px); background: #f0f2f5; padding: 0; display: none; }
 .miro-container iframe { width: 100%; height: 100%; border: none; display: block; }
+
+/* ── ACCESS TRACKER ─────────────────────────────────────────────────────────── */
+#view-access { display: none; padding: 24px 32px; }
+.at-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.at-header h2 { font-size: 18px; font-weight: 700; color: #111; }
+.at-header p { font-size: 13px; color: #6B7280; margin-top: 2px; }
+.at-stats { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.at-stat { background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; padding: 14px 20px; flex: 1; min-width: 130px; }
+.at-stat .stat-num { font-size: 28px; font-weight: 800; color: #111; }
+.at-stat .stat-label { font-size: 11px; color: #6B7280; margin-top: 2px; text-transform: uppercase; letter-spacing: .4px; }
+.at-stat.overdue .stat-num { color: #DC2626; }
+.at-stat.warning .stat-num { color: #D97706; }
+.at-stat.complete .stat-num { color: #10B981; }
+.at-body { display: flex; gap: 20px; }
+.at-sidebar { width: 180px; flex-shrink: 0; }
+.at-sidebar-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #9CA3AF; margin-bottom: 8px; }
+.at-filter-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 8px 10px; border-radius: 7px; border: none; background: transparent; font-size: 13px; color: #374151; cursor: pointer; font-family: inherit; margin-bottom: 2px; transition: background .12s; }
+.at-filter-btn:hover { background: #F3F4F6; }
+.at-filter-btn.active { background: #EFF6FF; color: #1D4ED8; font-weight: 600; }
+.at-filter-count { font-size: 11px; font-weight: 700; background: #E5E7EB; color: #6B7280; border-radius: 10px; padding: 1px 7px; }
+.at-filter-btn.active .at-filter-count { background: #DBEAFE; color: #1D4ED8; }
+.at-filter-btn.overdue-btn.active { background: #FEF2F2; color: #DC2626; }
+.at-filter-btn.overdue-btn.active .at-filter-count { background: #FEE2E2; color: #DC2626; }
+.at-filter-btn.warning-btn.active { background: #FFFBEB; color: #D97706; }
+.at-filter-btn.warning-btn.active .at-filter-count { background: #FEF3C7; color: #D97706; }
+.at-portal-link { margin-top: 20px; padding: 10px; background: #F9FAFB; border: 1px dashed #D1D5DB; border-radius: 8px; font-size: 11px; color: #6B7280; text-align: center; }
+.at-portal-link a { color: #3B82F6; text-decoration: none; font-weight: 600; }
+.at-portal-link a:hover { text-decoration: underline; }
+.at-main { flex: 1; min-width: 0; }
+.at-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.at-toolbar-right { display: flex; gap: 8px; }
+.at-add-btn { padding: 8px 16px; background: #111827; color: #fff; border: none; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s; }
+.at-add-btn:hover { background: #1F2937; }
+.at-add-btn:disabled { opacity: .4; cursor: not-allowed; }
+.at-portal-btn { padding: 8px 14px; background: #fff; color: #374151; border: 1px solid #E5E7EB; border-radius: 7px; font-size: 13px; cursor: pointer; font-family: inherit; transition: all .15s; }
+.at-portal-btn:hover { background: #F3F4F6; }
+.at-empty { text-align: center; padding: 60px 20px; color: #9CA3AF; }
+.at-empty .at-empty-icon { font-size: 40px; margin-bottom: 12px; }
+.at-empty p { font-size: 14px; }
+/* Client cards */
+.at-client-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; margin-bottom: 10px; overflow: hidden; transition: box-shadow .15s; }
+.at-client-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+.at-client-card.overdue { border-left: 4px solid #EF4444; }
+.at-client-card.warning { border-left: 4px solid #F59E0B; }
+.at-client-card.ok { border-left: 4px solid #10B981; }
+.at-client-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; cursor: pointer; }
+.at-avatar { width: 38px; height: 38px; border-radius: 50%; background: #1F2937; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+.at-client-card.overdue .at-avatar { background: #EF4444; }
+.at-client-card.warning .at-avatar { background: #F59E0B; }
+.at-client-card.ok .at-avatar { background: #10B981; }
+.at-client-info { flex: 1; min-width: 0; }
+.at-client-name { font-size: 14px; font-weight: 700; color: #111; }
+.at-client-meta { font-size: 11px; color: #9CA3AF; margin-top: 2px; }
+.at-chips { display: flex; flex-wrap: wrap; gap: 5px; flex: 2; }
+.at-chip { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 5px; }
+.at-chip.done { background: #D1FAE5; color: #065F46; }
+.at-chip.pending { background: #F3F4F6; color: #6B7280; }
+.at-chip.overdue-chip { background: #FEE2E2; color: #DC2626; }
+.at-days-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.at-days-badge.badge-ok { background: #D1FAE5; color: #065F46; }
+.at-days-badge.badge-warn { background: #FEF3C7; color: #D97706; }
+.at-days-badge.badge-over { background: #FEE2E2; color: #DC2626; }
+/* Detail panel */
+.at-detail { display: none; border-top: 1px solid #F3F4F6; padding: 16px; background: #FAFAFA; }
+.at-detail.open { display: block; }
+.at-detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; margin-bottom: 14px; }
+.at-detail-item { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #E5E7EB; border-radius: 7px; padding: 8px 10px; }
+.at-detail-item input[type=checkbox] { width: 15px; height: 15px; cursor: pointer; accent-color: #10B981; flex-shrink: 0; }
+.at-detail-item input[type=checkbox]:disabled { cursor: not-allowed; opacity: .5; }
+.at-platform-name { font-size: 12px; font-weight: 500; color: #374151; }
+.at-detail-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.at-action-btn { padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 500; transition: all .15s; }
+.at-action-btn.primary { background: #111827; color: #fff; border: none; }
+.at-action-btn.primary:hover { background: #1F2937; }
+.at-action-btn.secondary { background: #fff; color: #374151; border: 1px solid #E5E7EB; }
+.at-action-btn.secondary:hover { background: #F3F4F6; }
+.at-action-btn.danger { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+.at-action-btn.danger:hover { background: #DC2626; color: #fff; }
+/* Add client modal */
+.at-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; align-items: center; justify-content: center; }
+.at-modal-overlay.open { display: flex; }
+.at-modal { background: #fff; border-radius: 12px; padding: 28px; width: 440px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+.at-modal-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.at-modal-sub { font-size: 13px; color: #6B7280; margin-bottom: 20px; }
 </style>
 </head>
 <body>
@@ -361,6 +445,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <div class="view-tabs">
     <button class="view-tab active" id="tab-board" onclick="switchTab('board')">📋 Onboarding Board</button>
     <button class="view-tab" id="tab-miro" onclick="switchTab('miro')">🗂 Miro Reference</button>
+    <button class="view-tab" id="tab-access" onclick="switchTab('access')">🔑 Access Tracker</button>
   </div>
 
   <div id="view-board">
@@ -370,6 +455,50 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
     <div class="board">
       <div class="board-inner" id="board"></div>
+    </div>
+  </div>
+
+  <!-- ── ACCESS TRACKER VIEW ─────────────────────────────────────────────── -->
+  <div id="view-access">
+    <div class="at-header">
+      <div>
+        <h2>🔑 Platform Access Tracker</h2>
+        <p>Track client platform access status — flag overdue requests and generate follow-up emails</p>
+      </div>
+    </div>
+    <div class="at-stats">
+      <div class="at-stat"><div class="stat-num" id="at-stat-active">0</div><div class="stat-label">Active Clients</div></div>
+      <div class="at-stat overdue"><div class="stat-num" id="at-stat-overdue">0</div><div class="stat-label">Overdue (7+ days)</div></div>
+      <div class="at-stat warning"><div class="stat-num" id="at-stat-warn">0</div><div class="stat-label">Needs Follow-up</div></div>
+      <div class="at-stat complete"><div class="stat-num" id="at-stat-complete">0</div><div class="stat-label">Fully Complete</div></div>
+    </div>
+    <div class="at-body">
+      <div class="at-sidebar">
+        <div class="at-sidebar-title">Filter by Status</div>
+        <button class="at-filter-btn active" id="atf-all" onclick="atFilter('all',this)">All Clients <span class="at-filter-count" id="at-count-all">0</span></button>
+        <button class="at-filter-btn overdue-btn" id="atf-overdue" onclick="atFilter('overdue',this)">Overdue <span class="at-filter-count" id="at-count-overdue">0</span></button>
+        <button class="at-filter-btn warning-btn" id="atf-warning" onclick="atFilter('warning',this)">Needs Follow-up <span class="at-filter-count" id="at-count-warning">0</span></button>
+        <button class="at-filter-btn" id="atf-ok" onclick="atFilter('ok',this)">On Track / Done <span class="at-filter-count" id="at-count-ok">0</span></button>
+        <div class="at-portal-link">
+          Client portal:<br>
+          <a href="https://kwmoore22.github.io/npa-access-portal/" target="_blank">npa-access-portal →</a><br>
+          <button class="at-portal-btn" style="margin-top:8px;width:100%;font-size:11px;padding:5px 8px" onclick="atCopyPortalLink()">Copy link</button>
+        </div>
+      </div>
+      <div class="at-main">
+        <div class="at-toolbar">
+          <div style="font-size:13px;color:#6B7280" id="at-toolbar-label">Showing all clients</div>
+          <div class="at-toolbar-right">
+            <button class="at-add-btn" id="at-add-btn" onclick="atOpenModal()">+ Add Client</button>
+          </div>
+        </div>
+        <div id="at-client-list">
+          <div class="at-empty" id="at-empty">
+            <div class="at-empty-icon">📋</div>
+            <p>No clients yet — click <strong>+ Add Client</strong> to get started</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -463,6 +592,30 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </table>
     <div class="modal-actions" style="margin-top:20px">
       <button class="btn btn-secondary" onclick="closeAdmin()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADD CLIENT MODAL ──────────────────────────────────────────────────── -->
+<div class="at-modal-overlay" id="at-modal" onclick="if(event.target.id==='at-modal')atCloseModal()">
+  <div class="at-modal" onclick="event.stopPropagation()">
+    <div class="at-modal-title">Add New Client</div>
+    <div class="at-modal-sub">Client will appear in the tracker immediately once added.</div>
+    <div class="form-group"><label class="form-label">Client Name</label><input class="form-input" id="at-input-name" type="text" placeholder="e.g. Acme Corp"></div>
+    <div class="form-group"><label class="form-label">Account Manager</label><input class="form-input" id="at-input-am" type="text" placeholder="e.g. Rachel May"></div>
+    <div class="form-group"><label class="form-label">Contract Signed Date</label><input class="form-input" id="at-input-date" type="date"></div>
+    <div class="form-group">
+      <label class="form-label">Service Lines</label>
+      <select class="form-input" id="at-input-services">
+        <option value="seo">SEO Only</option>
+        <option value="paid">Paid Media Only</option>
+        <option value="seo+paid">SEO + Paid Media</option>
+        <option value="all">All Services (SEO + Paid + Email)</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="atSaveClient()">Add Client</button>
+      <button class="btn btn-secondary" onclick="atCloseModal()">Cancel</button>
     </div>
   </div>
 </div>
@@ -704,6 +857,12 @@ function loadUserRole(uid) {
 function onAuthenticated() {
   showApp();
   loadUsers();
+  // Init access tracker
+  if (FIREBASE_ENABLED && db) {
+    atInitFirebase();
+  } else {
+    atInitLocal();
+  }
   // Listen for board changes from all users
   boardRef.on('value', snap => {
     const data = snap.val();
@@ -1345,12 +1504,277 @@ function activateCell(laneId, phaseId) {
 // TAB SWITCHER
 // ═══════════════════════════════════════════════════════════════════════════
 function switchTab(name) {
-  document.getElementById('view-board').style.display = name === 'board' ? '' : 'none';
-  document.getElementById('view-miro').style.display  = name === 'miro'  ? 'block' : 'none';
-  document.getElementById('tab-board').classList.toggle('active', name === 'board');
-  document.getElementById('tab-miro').classList.toggle('active',  name === 'miro');
-  // hide board-specific toolbar when on Miro tab
+  document.getElementById('view-board').style.display  = name === 'board'  ? '' : 'none';
+  document.getElementById('view-miro').style.display   = name === 'miro'   ? 'block' : 'none';
+  document.getElementById('view-access').style.display = name === 'access' ? '' : 'none';
+  document.getElementById('tab-board').classList.toggle('active',  name === 'board');
+  document.getElementById('tab-miro').classList.toggle('active',   name === 'miro');
+  document.getElementById('tab-access').classList.toggle('active', name === 'access');
   document.querySelector('.toolbar').style.display = name === 'board' ? '' : 'none';
+  if (name === 'access') atRender();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ACCESS TRACKER
+// ═══════════════════════════════════════════════════════════════════════════
+const AT_PORTAL_URL = 'https://kwmoore22.github.io/npa-access-portal/';
+const AT_PLATFORMS_SEO   = ['GA4', 'GSC', 'GTM', 'GBP', 'WordPress'];
+const AT_PLATFORMS_PAID  = ['Google Ads', 'Meta Ads', 'Microsoft Ads'];
+const AT_PLATFORMS_EMAIL = ['Klaviyo', 'Mailchimp / ESP'];
+const AT_DB_PATH = '/access_clients';
+
+let atClients = [];
+let atCurrentFilter = 'all';
+let atDbRef = null;
+
+function atGetPlatforms(services) {
+  let p = [];
+  if (services === 'seo' || services === 'seo+paid' || services === 'all') p = p.concat(AT_PLATFORMS_SEO);
+  if (services === 'paid' || services === 'seo+paid' || services === 'all') p = p.concat(AT_PLATFORMS_PAID);
+  if (services === 'all') p = p.concat(AT_PLATFORMS_EMAIL);
+  return p;
+}
+
+function atGetDaysSince(dateStr) {
+  const d = new Date(dateStr);
+  const now = new Date();
+  return Math.floor((now - d) / 86400000);
+}
+
+function atGetUrgency(client) {
+  const platforms = atGetPlatforms(client.services);
+  const completed = client.completed || [];
+  if (platforms.length > 0 && completed.length >= platforms.length) return 'ok';
+  const days = atGetDaysSince(client.signedDate);
+  if (days >= 7) return 'overdue';
+  if (days >= 3) return 'warning';
+  return 'ok';
+}
+
+function atGetInitials(name) {
+  return name.trim().split(/\s+/).map(w => w[0]).join('').substring(0, 2).toUpperCase();
+}
+
+function atRender() {
+  const list = document.getElementById('at-client-list');
+  const empty = document.getElementById('at-empty');
+  const canEdit = perms && perms().canManage;
+
+  // update add button state
+  const addBtn = document.getElementById('at-add-btn');
+  if (addBtn) addBtn.disabled = !canEdit;
+
+  let filtered = atClients;
+  if (atCurrentFilter === 'overdue') filtered = atClients.filter(c => atGetUrgency(c) === 'overdue');
+  else if (atCurrentFilter === 'warning') filtered = atClients.filter(c => atGetUrgency(c) === 'warning');
+  else if (atCurrentFilter === 'ok') filtered = atClients.filter(c => atGetUrgency(c) === 'ok');
+
+  // remove old cards
+  list.querySelectorAll('.at-client-card').forEach(e => e.remove());
+  empty.style.display = filtered.length === 0 ? 'block' : 'none';
+
+  filtered.forEach(client => {
+    const platforms = atGetPlatforms(client.services);
+    const completed = client.completed || [];
+    const days = atGetDaysSince(client.signedDate);
+    const urgency = atGetUrgency(client);
+    const allDone = completed.length >= platforms.length && platforms.length > 0;
+
+    let badgeClass = 'badge-ok';
+    let badgeText = allDone ? '✓ Complete' : `Day ${days}`;
+    if (urgency === 'overdue') badgeClass = 'badge-over';
+    else if (urgency === 'warning') badgeClass = 'badge-warn';
+
+    const chipsHtml = platforms.map(p => {
+      const done = completed.includes(p);
+      const cls = done ? 'done' : (urgency === 'overdue' ? 'overdue-chip' : 'pending');
+      return `<span class="at-chip ${cls}">${p}</span>`;
+    }).join('');
+
+    const pendingCount = platforms.length - completed.length;
+
+    const detailChecks = platforms.map(p => {
+      const done = completed.includes(p);
+      const disabled = !canEdit ? 'disabled' : '';
+      return `<div class="at-detail-item">
+        <input type="checkbox" ${done ? 'checked' : ''} ${disabled}
+          onchange="atToggleAccess('${client.id}','${p}',this.checked)">
+        <span class="at-platform-name">${p}</span>
+      </div>`;
+    }).join('');
+
+    const removeBtn = canEdit
+      ? `<button class="at-action-btn danger" onclick="atRemoveClient('${client.id}')">Remove Client</button>`
+      : '';
+
+    const card = document.createElement('div');
+    card.className = `at-client-card ${urgency}`;
+    card.id = `at-client-${client.id}`;
+    card.innerHTML = `
+      <div class="at-client-row" onclick="atToggleDetail('${client.id}')">
+        <div class="at-avatar">${atGetInitials(client.name)}</div>
+        <div class="at-client-info">
+          <div class="at-client-name">${client.name}</div>
+          <div class="at-client-meta">AM: ${client.am} · ${pendingCount} of ${platforms.length} pending</div>
+        </div>
+        <div class="at-chips">${chipsHtml}</div>
+        <span class="at-days-badge ${badgeClass}">${badgeText}</span>
+      </div>
+      <div class="at-detail" id="at-detail-${client.id}">
+        <div class="at-detail-grid">${detailChecks}</div>
+        <div class="at-detail-actions">
+          <button class="at-action-btn primary" onclick="atCopyPortalLinkForClient(event)">Copy client portal link</button>
+          <button class="at-action-btn secondary" onclick="atCopyFollowUp('${client.id}', event)">Copy follow-up email</button>
+          ${removeBtn}
+        </div>
+      </div>`;
+    list.appendChild(card);
+  });
+
+  atUpdateStats();
+}
+
+function atUpdateStats() {
+  document.getElementById('at-stat-active').textContent   = atClients.length;
+  document.getElementById('at-stat-overdue').textContent  = atClients.filter(c => atGetUrgency(c) === 'overdue').length;
+  document.getElementById('at-stat-warn').textContent     = atClients.filter(c => atGetUrgency(c) === 'warning').length;
+  document.getElementById('at-stat-complete').textContent = atClients.filter(c => {
+    const p = atGetPlatforms(c.services);
+    return p.length > 0 && p.every(pl => (c.completed || []).includes(pl));
+  }).length;
+  document.getElementById('at-count-all').textContent     = atClients.length;
+  document.getElementById('at-count-overdue').textContent = atClients.filter(c => atGetUrgency(c) === 'overdue').length;
+  document.getElementById('at-count-warning').textContent = atClients.filter(c => atGetUrgency(c) === 'warning').length;
+  document.getElementById('at-count-ok').textContent      = atClients.filter(c => atGetUrgency(c) === 'ok').length;
+  const labels = { all: 'Showing all clients', overdue: 'Showing overdue clients', warning: 'Showing clients needing follow-up', ok: 'Showing on-track / complete clients' };
+  document.getElementById('at-toolbar-label').textContent = labels[atCurrentFilter] || '';
+}
+
+function atToggleDetail(id) {
+  document.getElementById('at-detail-' + id).classList.toggle('open');
+}
+
+function atToggleAccess(clientId, platform, checked) {
+  if (!perms().canManage) return;
+  const client = atClients.find(c => c.id === clientId);
+  if (!client) return;
+  if (!client.completed) client.completed = [];
+  if (checked && !client.completed.includes(platform)) client.completed.push(platform);
+  else if (!checked) client.completed = client.completed.filter(p => p !== platform);
+  atSave();
+  atRender();
+  document.getElementById('at-detail-' + clientId).classList.add('open');
+}
+
+function atFilter(filter, btn) {
+  atCurrentFilter = filter;
+  document.querySelectorAll('.at-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  atRender();
+}
+
+function atOpenModal() {
+  if (!perms().canManage) return;
+  document.getElementById('at-input-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('at-input-name').value = '';
+  document.getElementById('at-input-am').value = '';
+  document.getElementById('at-modal').classList.add('open');
+  document.getElementById('at-input-name').focus();
+}
+
+function atCloseModal() {
+  document.getElementById('at-modal').classList.remove('open');
+}
+
+function atSaveClient() {
+  const name     = document.getElementById('at-input-name').value.trim();
+  const am       = document.getElementById('at-input-am').value.trim();
+  const date     = document.getElementById('at-input-date').value;
+  const services = document.getElementById('at-input-services').value;
+  if (!name || !am || !date) { alert('Please fill in all fields.'); return; }
+  atClients.push({ id: Date.now().toString(), name, am, signedDate: date, services, completed: [] });
+  atSave();
+  atCloseModal();
+  atRender();
+  toast('Client added');
+}
+
+function atRemoveClient(id) {
+  if (!confirm('Remove this client from the tracker?')) return;
+  atClients = atClients.filter(c => c.id !== id);
+  atSave();
+  atRender();
+  toast('Client removed');
+}
+
+function atSave() {
+  if (FIREBASE_ENABLED && atDbRef) {
+    atDbRef.set(atClients);
+  } else {
+    localStorage.setItem('npa_tracker_clients', JSON.stringify(atClients));
+  }
+}
+
+function atCopyPortalLink() {
+  navigator.clipboard.writeText(AT_PORTAL_URL).then(() => toast('Portal link copied'));
+}
+
+function atCopyPortalLinkForClient(event) {
+  navigator.clipboard.writeText(AT_PORTAL_URL).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = orig, 1800);
+  });
+}
+
+function atCopyFollowUp(id, event) {
+  const client = atClients.find(c => c.id === id);
+  if (!client) return;
+  const platforms = atGetPlatforms(client.services);
+  const pending = platforms.filter(p => !(client.completed || []).includes(p));
+  if (pending.length === 0) { toast('All platforms complete — no follow-up needed'); return; }
+  const days = atGetDaysSince(client.signedDate);
+  const text = `Hi ${client.name} team,\n\nJust following up on platform access — we're on Day ${days} of onboarding and still need access to: ${pending.join(', ')}.\n\nYou can complete these steps using our setup guide here: ${AT_PORTAL_URL}\n\nIf you run into any issues, feel free to reply and I'll walk you through it.\n\nThanks,\nOnboarding Team | NP Accel`;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = orig, 1800);
+  });
+}
+
+function atInitFirebase() {
+  if (!FIREBASE_ENABLED || !window.firebase) return;
+  atDbRef = firebase.database().ref(AT_DB_PATH);
+  atDbRef.on('value', snap => {
+    const data = snap.val();
+    if (Array.isArray(data)) {
+      atClients = data;
+    } else if (data && typeof data === 'object') {
+      atClients = Object.values(data);
+    } else {
+      atClients = [];
+    }
+    if (document.getElementById('view-access').style.display !== 'none') atRender();
+  });
+}
+
+function atInitLocal() {
+  const saved = localStorage.getItem('npa_tracker_clients');
+  atClients = saved ? JSON.parse(saved) : atGetDemoClients();
+}
+
+function atGetDemoClients() {
+  const today = new Date();
+  const d4 = new Date(today); d4.setDate(today.getDate() - 4);
+  const d8 = new Date(today); d8.setDate(today.getDate() - 8);
+  const d1 = new Date(today); d1.setDate(today.getDate() - 1);
+  return [
+    { id: '1', name: 'United WRG', am: 'Rachel May', signedDate: d4.toISOString().split('T')[0], services: 'seo+paid', completed: ['GA4', 'GSC'] },
+    { id: '2', name: 'Sample Client Co.', am: 'Leslie Prince', signedDate: d8.toISOString().split('T')[0], services: 'seo', completed: ['GA4'] },
+    { id: '3', name: 'Apex Roofing', am: 'Austin Webb', signedDate: d1.toISOString().split('T')[0], services: 'paid', completed: [] },
+  ];
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
