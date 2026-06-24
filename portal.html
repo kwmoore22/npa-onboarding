@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account Access Setup — NP Accel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<style>
+:root {
+  --orange: #F15A2B;
+  --orange-lt: #FEF0EB;
+  --orange-mid: #FBDDD3;
+  --dark: #111827;
+  --mid: #4B5563;
+  --muted: #9CA3AF;
+  --border: #E5E7EB;
+  --bg: #F9FAFB;
+  --white: #ffffff;
+  --green: #10B981;
+  --green-lt: #ECFDF5;
+  --blue: #3B82F6;
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--dark); font-size: 14px; line-height: 1.6; }
+
+/* ── HEADER ── */
+.portal-header { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 58px; position: sticky; top: 0; z-index: 100; }
+.portal-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; color: var(--dark); text-decoration: none; }
+.portal-logo-icon { width: 32px; height: 32px; background: var(--orange); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+.portal-contact { font-size: 12px; color: var(--muted); }
+.portal-contact a { color: var(--orange); text-decoration: none; font-weight: 600; }
+.portal-contact a:hover { text-decoration: underline; }
+
+/* ── PROGRESS BAR ── */
+.progress-bar-wrap { background: var(--white); border-bottom: 1px solid var(--border); padding: 12px 24px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--mid); margin-bottom: 7px; }
+.progress-track { height: 6px; background: #E5E7EB; border-radius: 99px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--green); border-radius: 99px; transition: width .4s ease; }
+.progress-complete-msg { font-size: 13px; font-weight: 600; color: var(--green); margin-top: 6px; display: none; }
+
+/* ── HERO ── */
+.hero { max-width: 780px; margin: 0 auto; padding: 36px 24px 24px; }
+.hero-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--orange); margin-bottom: 10px; }
+.hero h1 { font-size: 26px; font-weight: 800; color: var(--dark); line-height: 1.25; margin-bottom: 10px; }
+.hero p { font-size: 14px; color: var(--mid); max-width: 560px; }
+.hero-client-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--orange-lt); border: 1px solid var(--orange-mid); border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600; color: var(--orange); margin-top: 14px; }
+
+/* ── MAIN CONTENT ── */
+.portal-body { max-width: 780px; margin: 0 auto; padding: 0 24px 60px; }
+
+/* ── SECTION HEADERS ── */
+.section-header { display: flex; align-items: center; gap: 10px; margin: 32px 0 16px; }
+.section-header h2 { font-size: 16px; font-weight: 700; color: var(--dark); }
+.section-divider { flex: 1; height: 1px; background: var(--border); }
+.section-count { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+/* ── PLATFORM CARDS ── */
+.platform-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; transition: box-shadow .15s; }
+.platform-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.07); }
+.platform-card.done { border-color: var(--green); }
+.platform-card.done .card-header { background: var(--green-lt); }
+
+.card-header { display: flex; align-items: center; gap: 14px; padding: 16px 20px; cursor: pointer; user-select: none; }
+.platform-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0; }
+.card-info { flex: 1; min-width: 0; }
+.card-title { font-size: 14px; font-weight: 700; color: var(--dark); }
+.card-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.card-status { display: flex; align-items: center; gap: 8px; }
+.done-badge { background: var(--green-lt); border: 1px solid #A7F3D0; color: var(--green); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+.expand-icon { color: var(--muted); font-size: 12px; transition: transform .2s; }
+.card-header.open .expand-icon { transform: rotate(180deg); }
+
+.card-body { display: none; padding: 0 20px 20px; border-top: 1px solid var(--border); }
+.card-body.open { display: block; }
+
+.why-box { background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #0C4A6E; margin: 14px 0 16px; }
+.why-box strong { font-weight: 600; }
+
+.steps-list { list-style: none; margin-bottom: 18px; }
+.steps-list li { display: flex; gap: 12px; margin-bottom: 10px; font-size: 13px; color: var(--mid); }
+.step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--dark); color: #fff; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.step-text { flex: 1; line-height: 1.5; }
+.step-text strong { color: var(--dark); font-weight: 600; }
+
+.emails-section { margin-bottom: 18px; }
+.emails-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 8px; }
+.email-chip { display: flex; align-items: center; justify-content: space-between; background: #F9FAFB; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; margin-bottom: 6px; }
+.email-chip .email-addr { font-size: 13px; font-weight: 500; color: var(--dark); font-family: 'Courier New', monospace; }
+.email-chip .email-role { font-size: 11px; color: var(--muted); margin-left: 8px; }
+.copy-email-btn { padding: 3px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); color: var(--mid); font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .12s; white-space: nowrap; }
+.copy-email-btn:hover { background: var(--dark); color: #fff; border-color: var(--dark); }
+.copy-email-btn.copied { background: var(--green); color: #fff; border-color: var(--green); }
+
+.mark-done-btn { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid var(--orange); background: var(--orange); color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .15s; }
+.mark-done-btn:hover { background: #D94D22; border-color: #D94D22; }
+.mark-done-btn.done { background: var(--green); border-color: var(--green); cursor: default; }
+.mark-done-btn.done:hover { background: var(--green); border-color: var(--green); }
+
+.help-link { display: block; text-align: center; font-size: 11px; color: var(--muted); margin-top: 10px; }
+.help-link a { color: var(--blue); text-decoration: none; }
+.help-link a:hover { text-decoration: underline; }
+
+/* ── CMS SELECTOR ── */
+.cms-selector { margin-bottom: 16px; }
+.cms-selector-label { font-size: 12px; font-weight: 600; color: var(--mid); margin-bottom: 8px; }
+.cms-btn-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.cms-btn { padding: 6px 14px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--white); color: var(--mid); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .12s; }
+.cms-btn:hover { border-color: var(--orange); color: var(--orange); }
+.cms-btn.active { border-color: var(--orange); background: var(--orange-lt); color: var(--orange); }
+.cms-card { display: none; }
+.cms-card.visible { display: block; }
+
+/* ── NOTE BOX ── */
+.note-box { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #92400E; margin-bottom: 14px; }
+
+/* ── LOADING / COMPLETE ── */
+#portal-loading { text-align: center; padding: 80px 24px; color: var(--muted); font-size: 14px; }
+#portal-loading .spin { display: inline-block; width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--orange); border-radius: 50%; animation: spin .8s linear infinite; margin-bottom: 14px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.complete-banner { background: var(--green-lt); border: 1px solid #A7F3D0; border-radius: var(--radius); padding: 28px; text-align: center; margin: 32px 0; display: none; }
+.complete-banner .complete-icon { font-size: 40px; margin-bottom: 10px; }
+.complete-banner h2 { font-size: 20px; font-weight: 800; color: #065F46; margin-bottom: 6px; }
+.complete-banner p { font-size: 13px; color: #047857; }
+
+/* ── SECURITY FOOTER ── */
+.portal-footer { text-align: center; padding: 32px 24px; font-size: 11px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 20px; }
+.portal-footer strong { color: var(--mid); }
+
+/* ── TOAST ── */
+.portal-toast { position: fixed; bottom: 20px; right: 20px; background: var(--dark); color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; z-index: 500; opacity: 0; transform: translateY(8px); transition: all .25s; pointer-events: none; }
+.portal-toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="portal-header">
+  <a class="portal-logo" href="#">
+    <div class="portal-logo-icon">NP</div>
+    NP Accel — Client Access Setup
+  </a>
+  <div class="portal-contact">Need help? <a href="mailto:destiny.martin@npaccel.com" id="contact-link">Contact your Account Manager</a></div>
+</header>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar-wrap">
+  <div class="progress-label">
+    <span id="progress-text">Loading…</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  <div class="progress-complete-msg" id="progress-complete-msg">🎉 All platforms complete — you're all set!</div>
+</div>
+
+<!-- LOADING -->
+<div id="portal-loading">
+  <div class="spin"></div>
+  <div>Loading your setup…</div>
+</div>
+
+<!-- MAIN -->
+<div id="portal-main" style="display:none">
+  <div class="hero">
+    <div class="hero-eyebrow">Account Access Setup</div>
+    <h1>Grant access to your marketing platforms</h1>
+    <p>Follow the steps below to add NPAccel to each platform. We only need access to run your campaigns — we will never have access to billing or payment information.</p>
+    <div id="client-badge" class="hero-client-badge" style="display:none">👤 <span id="client-name-display"></span></div>
+  </div>
+
+  <div class="portal-body">
+
+    <!-- ── GOOGLE PLATFORMS ─────────────────────────────────────── -->
+    <div id="section-google" style="display:none">
+      <div class="section-header">
+        <h2>🔵 Google Platforms</h2>
+        <div class="section-divider"></div>
+        <div class="section-count" id="google-count"></div>
+      </div>
+
+      <!-- GA4 -->
+      <div class="platform-card" id="card-ga4" data-platform="GA4">
+        <div class="card-header" onclick="toggleCard('ga4')">
+          <div class="platform-icon" style="background:#E37400">GA</div>
+          <div class="card-info">
+            <div class="card-title">Google Analytics 4</div>
+            <div class="card-subtitle">Track website traffic &amp; campaign performance</div>
+          </div>
+          <div class="card-status">
+            <span class="done-badge" id="badge-ga4" style="display:none">✓ Done</span>
+            <span class="expand-icon" id="expand-ga4">▾</span>
+          </div>
+        </div>
+        <div class="card-body" id="body-ga4">
+          <div class="why-box"><strong>Why we need this:</strong> Google Analytics lets us measure the real impact of your campaigns — conversions, revenue, traffic sources, and user behavior.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Sign in to <a href="https://analytics.google.com" target="_blank" style="color:var(--blue)">analytics.google.com</a></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Click <strong>Admin</strong> (gear icon in the bottom left)</span></li>
+            <li><span class="step-num">3</span><span class="step-text">In the Account column, click <strong>Account Access Management</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Click the <strong>+</strong> button in the top right → select <strong>Add users</strong></span></li>
+            <li><span class="step-num">5</span><span class="step-text">Enter each email below and set the role to <strong>Administrator</strong></span></li>
+            <li><span class="step-num">6</span><span class="step-text">Click <strong>Add</strong> to save</span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Add these email addresses — Role: Administrator</div>
+            <div class="email-chip"><span><span class="email-addr">torik@npaccel.com</span><span class="email-role">Administrator</span></span><button class="copy-email-btn" onclick="copyEmail('torik@npaccel.com',this)">Copy</button></div>
+            <div class="email-chip"><span><span class="email-addr">kelseyh@npaccel.com</span><span class="email-role">Administrator</span></span><button class="copy-email-btn" onclick="copyEmail('kelseyh@npaccel.com',this)">Copy</button></div>
+            <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Administrator</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-ga4" onclick="markDone('GA4','btn-ga4','card-ga4','badge-ga4')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://support.google.com/analytics/answer/1009702" target="_blank">Google Analytics Help →</a></div>
+        </div>
+      </div>
+
+      <!-- GSC -->
+      <div class="platform-card" id="card-gsc" data-platform="GSC">
+        <div class="card-header" onclick="toggleCard('gsc')">
+          <div class="platform-icon" style="background:#1A73E8">SC</div>
+          <div class="card-info">
+            <div class="card-title">Google Search Console</div>
+            <div class="card-subtitle">Monitor search performance &amp; site health</div>
+          </div>
+          <div class="card-status">
+            <span class="done-badge" id="badge-gsc" style="display:none">✓ Done</span>
+            <span class="expand-icon" id="expand-gsc">▾</span>
+          </div>
+        </div>
+        <div class="card-body" id="body-gsc">
+          <div class="why-box"><strong>Why we need this:</strong> Search Console shows us how your site ranks in Google — keyword positions, click-through rates, and any technical issues hurting your visibility.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Go to <a href="https://search.google.com/search-console" target="_blank" style="color:var(--blue)">Google Search Console</a> and select your property</span></li>
+            <li><span class="step-num">2</span><span class="step-text">Click the <strong>Settings</strong> icon (gear) in the left navigation panel</span></li>
+            <li><span class="step-num">3</span><span class="step-text">Click <strong>Users &amp; permissions</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Click <strong>Add user</strong></span></li>
+            <li><span class="step-num">5</span><span class="step-text">Enter each email below and choose <strong>Owner</strong> permission level</span></li>
+            <li><span class="step-num">6</span><span class="step-text">Click <strong>Add</strong></span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Add these email addresses — Role: Owner</div>
+            <div class="email-chip"><span><span class="email-addr">torik@npaccel.com</span><span class="email-role">Owner</span></span><button class="copy-email-btn" onclick="copyEmail('torik@npaccel.com',this)">Copy</button></div>
+            <div class="email-chip"><span><span class="email-addr">destiny.martin@npaccel.com</span><span class="email-role">Owner</span></span><button class="copy-email-btn" onclick="copyEmail('destiny.martin@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-gsc" onclick="markDone('GSC','btn-gsc','card-gsc','badge-gsc')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://support.google.com/webmasters/answer/2453966" target="_blank">Search Console Help →</a></div>
+        </div>
+      </div>
+
+      <!-- GTM -->
+      <div class="platform-card" id="card-gtm" data-platform="GTM">
+        <div class="card-header" onclick="toggleCard('gtm')">
+          <div class="platform-icon" style="background:#4285F4">GT</div>
+          <div class="card-info">
+            <div class="card-title">Google Tag Manager</div>
+            <div class="card-subtitle">Manage tracking tags &amp; conversion pixels</div>
+          </div>
+          <div class="card-status">
+            <span class="done-badge" id="badge-gtm" style="display:none">✓ Done</span>
+            <span class="expand-icon" id="expand-gtm">▾</span>
+          </div>
+        </div>
+        <div class="card-body" id="body-gtm">
+          <div class="why-box"><strong>Why we need this:</strong> Tag Manager lets us install tracking codes (conversions, remarketing pixels, analytics events) without needing developer help for each change.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Sign in to <a href="https://tagmanager.google.com" target="_blank" style="color:var(--blue)">Google Tag Manager</a></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Click <strong>Admin</strong> at the top of the page</span></li>
+            <li><span class="step-num">3</span><span class="step-text">In the <strong>Account</strong> column (left side), click <strong>User Management</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Click <strong>+</strong> → <strong>Add new users</strong></span></li>
+            <li><span class="step-num">5</span><span class="step-text">Enter each email below. Set Account Permission to <strong>Administrator</strong></span></li>
+            <li><span class="step-num">6</span><span class="step-text">Under Container Permissions, change "Read" to <strong>Publish</strong></span></li>
+            <li><span class="step-num">7</span><span class="step-text">Click <strong>Invite</strong></span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Add these email addresses — Role: Administrator + Publish</div>
+            <div class="email-chip"><span><span class="email-addr">torik@npaccel.com</span><span class="email-role">Administrator / Publish</span></span><button class="copy-email-btn" onclick="copyEmail('torik@npaccel.com',this)">Copy</button></div>
+            <div class="email-chip"><span><span class="email-addr">kelseyh@npaccel.com</span><span class="email-role">Administrator / Publish</span></span><button class="copy-email-btn" onclick="copyEmail('kelseyh@npaccel.com',this)">Copy</button></div>
+            <div class="email-chip"><span><span class="email-addr">destiny.martin@npaccel.com</span><span class="email-role">Administrator / Publish</span></span><button class="copy-email-btn" onclick="copyEmail('destiny.martin@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-gtm" onclick="markDone('GTM','btn-gtm','card-gtm','badge-gtm')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://support.google.com/tagmanager/answer/6107011" target="_blank">Tag Manager Help →</a></div>
+        </div>
+      </div>
+
+      <!-- GBP -->
+      <div class="platform-card" id="card-gbp" data-platform="GBP">
+        <div class="card-header" onclick="toggleCard('gbp')">
+          <div class="platform-icon" style="background:#34A853">GB</div>
+          <div class="card-info">
+            <div class="card-title">Google Business Profile</div>
+            <div class="card-subtitle">Manage local listings &amp; reviews</div>
+          </div>
+          <div class="card-status">
+            <span class="done-badge" id="badge-gbp" style="display:none">✓ Done</span>
+            <span class="expand-icon" id="expand-gbp">▾</span>
+          </div>
+        </div>
+        <div class="card-body" id="body-gbp">
+          <div class="why-box"><strong>Why we need this:</strong> Access to your Business Profile lets us optimize your local listing, respond to reviews, and ensure your business information is accurate across Google Search and Maps.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Sign in to <a href="https://business.google.com" target="_blank" style="color:var(--blue)">Google Business Profile</a> and select your business</span></li>
+            <li><span class="step-num">2</span><span class="step-text">Click the <strong>three-dot menu (⋮)</strong> in the top right</span></li>
+            <li><span class="step-num">3</span><span class="step-text">Choose <strong>Business Profile settings</strong> → <strong>People and access</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Click <strong>Add</strong></span></li>
+            <li><span class="step-num">5</span><span class="step-text">Enter each email below and choose the <strong>Owner</strong> role</span></li>
+            <li><span class="step-num">6</span><span class="step-text">Click <strong>Invite</strong> — please notify your Account Manager once sent, as invitations expire</span></li>
+          </ol>
+          <div class="note-box">⚠️ <strong>Important:</strong> GBP invitations expire after a few days. Please let your Account Manager know once you've sent them so they can accept promptly.</div>
+          <div class="emails-section">
+            <div class="emails-label">Add these email addresses — Role: Owner</div>
+            <div class="email-chip"><span><span class="email-addr">destiny.martin@npaccel.com</span><span class="email-role">Owner</span></span><button class="copy-email-btn" onclick="copyEmail('destiny.martin@npaccel.com',this)">Copy</button></div>
+            <div class="email-chip"><span><span class="email-addr">kelseyh@npaccel.com</span><span class="email-role">Owner</span></span><button class="copy-email-btn" onclick="copyEmail('kelseyh@npaccel.com',this)">Copy</button></div>
+            <div class="email-chip"><span><span class="email-addr">torik@npaccel.com</span><span class="email-role">Owner</span></span><button class="copy-email-btn" onclick="copyEmail('torik@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-gbp" onclick="markDone('GBP','btn-gbp','card-gbp','badge-gbp')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://support.google.com/business/answer/3403100" target="_blank">Google Business Profile Help →</a></div>
+        </div>
+      </div>
+
+      <!-- Google Merchant Center -->
+      <div class="platform-card" id="card-gmc" data-platform="GMC" style="display:none">
+        <div class="card-header" onclick="toggleCard('gmc')">
+          <div class="platform-icon" style="background:#FBBC04;color:#1A1A1A">GM</div>
+          <div class="card-info">
+            <div class="card-title">Google Merchant Center</div>
+            <div class="card-subtitle">Manage product feeds &amp; Shopping ads</div>
+          </div>
+          <div class="card-status">
+            <span class="done-badge" id="badge-gmc" style="display:none">✓ Done</span>
+            <span class="expand-icon" id="expand-gmc">▾</span>
+          </div>
+        </div>
+        <div class="card-body" id="body-gmc">
+          <div class="why-box"><strong>Why we need this:</strong> Merchant Center hosts your product feed and connects to Google Shopping ads. Access lets us optimize your listings and troubleshoot feed issues.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Sign in to <a href="https://merchants.google.com" target="_blank" style="color:var(--blue)">Google Merchant Center</a></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Click the <strong>Settings gear (⚙)</strong> in the upper right corner</span></li>
+            <li><span class="step-num">3</span><span class="step-text">Select <strong>Account Access</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Under Users, click <strong>Add User</strong></span></li>
+            <li><span class="step-num">5</span><span class="step-text">Enter each email below, set access level to <strong>Admin</strong>, and turn off Email Notifications</span></li>
+            <li><span class="step-num">6</span><span class="step-text">Click <strong>Add User</strong> — notify your AM so they can accept before the invite expires</span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Add these email addresses — Role: Admin</div>
+            <div class="email-chip"><span><span class="email-addr">destiny.martin@npaccel.com</span><span class="email-role">Admin</span></span><button class="copy-email-btn" onclick="copyEmail('destiny.martin@npaccel.com',this)">Copy</button></div>
+            <div class="email-chip"><span><span class="email-addr">torik@npaccel.com</span><span class="email-role">Admin</span></span><button class="copy-email-btn" onclick="copyEmail('torik@npaccel.com',this)">Copy</button></div>
+            <div class="email-chip"><span><span class="email-addr">kelseyh@npaccel.com</span><span class="email-role">Admin</span></span><button class="copy-email-btn" onclick="copyEmail('kelseyh@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-gmc" onclick="markDone('GMC','btn-gmc','card-gmc','badge-gmc')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://support.google.com/merchants/answer/188656" target="_blank">Merchant Center Help →</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAID MEDIA ─────────────────────────────────────────────── -->
+    <div id="section-paid" style="display:none">
+      <div class="section-header">
+        <h2>📣 Paid Advertising</h2>
+        <div class="section-divider"></div>
+        <div class="section-count" id="paid-count"></div>
+      </div>
+
+      <!-- Google Ads -->
+      <div class="platform-card" id="card-gads" data-platform="Google Ads">
+        <div class="card-header" onclick="toggleCard('gads')">
+          <div class="platform-icon" style="background:#4285F4">G</div>
+          <div class="card-info">
+            <div class="card-title">Google Ads</div>
+            <div class="card-subtitle">Search, Display, Shopping &amp; YouTube campaigns</div>
+          </div>
+          <div class="card-status">
+            <span class="done-badge" id="badge-gads" style="display:none">✓ Done</span>
+            <span class="expand-icon" id="expand-gads">▾</span>
+          </div>
+        </div>
+        <div class="card-body" id="body-gads">
+          <div class="why-box"><strong>Why we need this:</strong> Direct account access allows us to build, optimize, and report on your Google Ads campaigns without needing to ask for your login credentials.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Sign in to <a href="https://ads.google.com" target="_blank" style="color:var(--blue)">Google Ads</a></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Click your account name or icon in the <strong>top right corner</strong></span></li>
+            <li><span class="step-num">3</span><span class="step-text">Select <strong>Account settings</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Scroll down to <strong>Delegate Access</strong></span></li>
+            <li><span class="step-num">5</span><span class="step-text">Click <strong>Invite to Access</strong></span></li>
+            <li><span class="step-num">6</span><span class="step-text">Enter: Name = <strong>NPAccel</strong>, Email = <strong>analytics2@npaccel.com</strong></span></li>
+            <li><span class="step-num">7</span><span class="step-text">Select <strong>Administrative Access</strong></span></li>
+            <li><span class="step-num">8</span><span class="step-text">Click <strong>Send invitation</strong></span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Invite this email — Role: Administrative Access</div>
+            <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Administrative Access</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-gads" onclick="markDone('Google Ads','btn-gads','card-gads','badge-gads')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://support.google.com/google-ads/answer/1704435" target="_blank">Google Ads Help →</a></div>
+        </div>
+      </div>
+
+      <!-- Meta Ads -->
+      <div class="platform-card" id="card-meta" data-platform="Meta Ads">
+        <div class="card-header" onclick="toggleCard('meta')">
+          <div class="platform-icon" style="background:#1877F2">f</div>
+          <div class="card-info">
+            <div class="card-title">Meta Ads (Facebook / Instagram)</div>
+            <div class="card-subtitle">Facebook &amp; Instagram advertising</div>
+          </div>
+          <div class="card-status">
+            <span class="done-badge" id="badge-meta" style="display:none">✓ Done</span>
+            <span class="expand-icon" id="expand-meta">▾</span>
+          </div>
+        </div>
+        <div class="card-body" id="body-meta">
+          <div class="why-box"><strong>Why we need this:</strong> Meta Business Manager access lets us create and manage ads on Facebook and Instagram, set up custom audiences, and view performance data.</div>
+          <div class="note-box">📌 <strong>Note:</strong> Meta access goes through <strong>Meta Business Suite</strong>. If you don't have Business Manager set up, contact your Account Manager and we'll help you get started.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Go to <a href="https://business.facebook.com" target="_blank" style="color:var(--blue)">Meta Business Suite</a></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Click <strong>Settings</strong> (gear icon) in the left sidebar</span></li>
+            <li><span class="step-num">3</span><span class="step-text">Go to <strong>People</strong> → click <strong>Invite people</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Enter the email below and assign <strong>Admin</strong> access</span></li>
+            <li><span class="step-num">5</span><span class="step-text">Also add NPAccel as a Partner: go to <strong>Partners</strong> → <strong>Add a partner</strong></span></li>
+            <li><span class="step-num">6</span><span class="step-text">Click <strong>Invite</strong></span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Invite this email — Role: Admin</div>
+            <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Admin</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-meta" onclick="markDone('Meta Ads','btn-meta','card-meta','badge-meta')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://www.facebook.com/business/help/2169003770027706" target="_blank">Meta Business Help →</a></div>
+        </div>
+      </div>
+
+      <!-- Microsoft Ads -->
+      <div class="platform-card" id="card-msads" data-platform="Microsoft Ads">
+        <div class="card-header" onclick="toggleCard('msads')">
+          <div class="platform-icon" style="background:#00A4EF">MS</div>
+          <div class="card-info">
+            <div class="card-title">Microsoft Advertising</div>
+            <div class="card-subtitle">Bing &amp; Microsoft network campaigns</div>
+          </div>
+          <div class="card-status">
+            <span class="done-badge" id="badge-msads" style="display:none">✓ Done</span>
+            <span class="expand-icon" id="expand-msads">▾</span>
+          </div>
+        </div>
+        <div class="card-body" id="body-msads">
+          <div class="why-box"><strong>Why we need this:</strong> Microsoft Advertising reaches Bing, Yahoo, and DuckDuckGo users. Direct access lets us manage and optimize your campaigns across the Microsoft network.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Sign in to <a href="https://ads.microsoft.com" target="_blank" style="color:var(--blue)">Microsoft Advertising</a></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Click <strong>Tools</strong> in the top navigation</span></li>
+            <li><span class="step-num">3</span><span class="step-text">Select <strong>Account Access</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Click <strong>Invite User</strong></span></li>
+            <li><span class="step-num">5</span><span class="step-text">Enter the email below and select the <strong>Super Admin</strong> role</span></li>
+            <li><span class="step-num">6</span><span class="step-text">Click <strong>Send</strong></span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Invite this email — Role: Super Admin</div>
+            <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Super Admin</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-msads" onclick="markDone('Microsoft Ads','btn-msads','card-msads','badge-msads')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://help.ads.microsoft.com/apex/index/3/en/52037" target="_blank">Microsoft Ads Help →</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WEBSITE ACCESS ──────────────────────────────────────────── -->
+    <div id="section-website" style="display:none">
+      <div class="section-header">
+        <h2>🌐 Website Access</h2>
+        <div class="section-divider"></div>
+        <div class="section-count">Select your platform below</div>
+      </div>
+
+      <div class="platform-card">
+        <div class="card-header" onclick="toggleCard('website')">
+          <div class="platform-icon" style="background:#6B7280">WP</div>
+          <div class="card-info">
+            <div class="card-title">CMS / Website Platform</div>
+            <div class="card-subtitle">WordPress, Squarespace, Wix, Webflow, and others</div>
+          </div>
+          <div class="card-status">
+            <span class="done-badge" id="badge-website" style="display:none">✓ Done</span>
+            <span class="expand-icon" id="expand-website">▾</span>
+          </div>
+        </div>
+        <div class="card-body" id="body-website">
+          <div class="cms-selector">
+            <div class="cms-selector-label">What platform does your website use?</div>
+            <div class="cms-btn-row">
+              <button class="cms-btn" onclick="selectCMS('wordpress', this)">WordPress</button>
+              <button class="cms-btn" onclick="selectCMS('squarespace', this)">Squarespace</button>
+              <button class="cms-btn" onclick="selectCMS('wix', this)">Wix</button>
+              <button class="cms-btn" onclick="selectCMS('webflow', this)">Webflow</button>
+              <button class="cms-btn" onclick="selectCMS('shopify', this)">Shopify</button>
+              <button class="cms-btn" onclick="selectCMS('bigcommerce', this)">BigCommerce</button>
+              <button class="cms-btn" onclick="selectCMS('hubspot', this)">HubSpot CMS</button>
+              <button class="cms-btn" onclick="selectCMS('other', this)">Other</button>
+            </div>
+          </div>
+
+          <!-- WordPress -->
+          <div class="cms-card" id="cms-wordpress">
+            <ol class="steps-list">
+              <li><span class="step-num">1</span><span class="step-text">Log in to your WordPress dashboard (<strong>yoursite.com/wp-admin</strong>)</span></li>
+              <li><span class="step-num">2</span><span class="step-text">Go to <strong>Users → Add New</strong></span></li>
+              <li><span class="step-num">3</span><span class="step-text">Enter each email below and select the <strong>Administrator</strong> role</span></li>
+              <li><span class="step-num">4</span><span class="step-text">Click <strong>Add New User</strong> (or <strong>Send Invitation</strong> if using WordPress.com)</span></li>
+            </ol>
+            <div class="emails-section">
+              <div class="emails-label">Add these email addresses — Role: Administrator</div>
+              <div class="email-chip"><span><span class="email-addr">destiny.martin@npaccel.com</span><span class="email-role">Administrator</span></span><button class="copy-email-btn" onclick="copyEmail('destiny.martin@npaccel.com',this)">Copy</button></div>
+              <div class="email-chip"><span><span class="email-addr">erinc@npaccel.com</span><span class="email-role">Administrator</span></span><button class="copy-email-btn" onclick="copyEmail('erinc@npaccel.com',this)">Copy</button></div>
+              <div class="email-chip"><span><span class="email-addr">sheymay@npaccel.com</span><span class="email-role">Administrator</span></span><button class="copy-email-btn" onclick="copyEmail('sheymay@npaccel.com',this)">Copy</button></div>
+              <div class="email-chip"><span><span class="email-addr">kelseyh@npaccel.com</span><span class="email-role">Administrator</span></span><button class="copy-email-btn" onclick="copyEmail('kelseyh@npaccel.com',this)">Copy</button></div>
+            </div>
+            <div class="help-link"><a href="https://wordpress.org/support/article/users-screen/" target="_blank">WordPress Users Help →</a></div>
+          </div>
+
+          <!-- Squarespace -->
+          <div class="cms-card" id="cms-squarespace">
+            <ol class="steps-list">
+              <li><span class="step-num">1</span><span class="step-text">Log in to <a href="https://www.squarespace.com" target="_blank" style="color:var(--blue)">Squarespace</a></span></li>
+              <li><span class="step-num">2</span><span class="step-text">From the main Dashboard, click <strong>⋯</strong> next to your site and select <strong>Permissions</strong></span></li>
+              <li><span class="step-num">3</span><span class="step-text">In the Invite Contributor window, enter Name: <strong>NPAccel</strong> and the email below</span></li>
+              <li><span class="step-num">4</span><span class="step-text">Click <strong>Invite</strong></span></li>
+            </ol>
+            <div class="emails-section">
+              <div class="emails-label">Invite this email</div>
+              <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+            </div>
+            <div class="help-link"><a href="https://support.squarespace.com/hc/en-us/articles/206543877" target="_blank">Squarespace Help →</a></div>
+          </div>
+
+          <!-- Wix -->
+          <div class="cms-card" id="cms-wix">
+            <ol class="steps-list">
+              <li><span class="step-num">1</span><span class="step-text">Log in to <a href="https://www.wix.com" target="_blank" style="color:var(--blue)">Wix</a></span></li>
+              <li><span class="step-num">2</span><span class="step-text">Go to <strong>Roles &amp; Permissions</strong></span></li>
+              <li><span class="step-num">3</span><span class="step-text">Click <strong>Invite People</strong></span></li>
+              <li><span class="step-num">4</span><span class="step-text">Enter the email below and select the <strong>Admin</strong> role</span></li>
+              <li><span class="step-num">5</span><span class="step-text">Click <strong>Send Invite</strong></span></li>
+            </ol>
+            <div class="emails-section">
+              <div class="emails-label">Invite this email — Role: Admin</div>
+              <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Admin</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+            </div>
+            <div class="help-link"><a href="https://support.wix.com/en/article/inviting-people-to-contribute-to-your-site" target="_blank">Wix Help Center →</a></div>
+          </div>
+
+          <!-- Webflow -->
+          <div class="cms-card" id="cms-webflow">
+            <ol class="steps-list">
+              <li><span class="step-num">1</span><span class="step-text">Log in to <a href="https://webflow.com" target="_blank" style="color:var(--blue)">Webflow</a></span></li>
+              <li><span class="step-num">2</span><span class="step-text">Open your project settings and go to the <strong>Editor</strong> tab</span></li>
+              <li><span class="step-num">3</span><span class="step-text">Click the <strong>+</strong> button to add a new Collaborator</span></li>
+              <li><span class="step-num">4</span><span class="step-text">Enter the email below and assign the appropriate role</span></li>
+              <li><span class="step-num">5</span><span class="step-text">Click <strong>Send invite</strong></span></li>
+            </ol>
+            <div class="emails-section">
+              <div class="emails-label">Invite this email</div>
+              <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+            </div>
+            <div class="help-link"><a href="https://university.webflow.com/lesson/collaboration" target="_blank">Webflow Help →</a></div>
+          </div>
+
+          <!-- Shopify -->
+          <div class="cms-card" id="cms-shopify">
+            <ol class="steps-list">
+              <li><span class="step-num">1</span><span class="step-text">Log in to your <a href="https://accounts.shopify.com" target="_blank" style="color:var(--blue)">Shopify Admin</a></span></li>
+              <li><span class="step-num">2</span><span class="step-text">Go to <strong>Settings → Users and permissions</strong></span></li>
+              <li><span class="step-num">3</span><span class="step-text">Click <strong>Add staff</strong></span></li>
+              <li><span class="step-num">4</span><span class="step-text">Enter the email below and select <strong>Full permissions</strong> (or check all relevant boxes)</span></li>
+              <li><span class="step-num">5</span><span class="step-text">Click <strong>Send invite</strong></span></li>
+            </ol>
+            <div class="emails-section">
+              <div class="emails-label">Invite this email — Role: Full permissions</div>
+              <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Full permissions</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+            </div>
+            <div class="help-link"><a href="https://help.shopify.com/en/manual/your-account/staff-accounts" target="_blank">Shopify Help →</a></div>
+          </div>
+
+          <!-- BigCommerce -->
+          <div class="cms-card" id="cms-bigcommerce">
+            <ol class="steps-list">
+              <li><span class="step-num">1</span><span class="step-text">Log in to <a href="https://login.bigcommerce.com" target="_blank" style="color:var(--blue)">BigCommerce</a></span></li>
+              <li><span class="step-num">2</span><span class="step-text">Go to <strong>Account Settings → Users</strong></span></li>
+              <li><span class="step-num">3</span><span class="step-text">Click <strong>Create a User Account</strong></span></li>
+              <li><span class="step-num">4</span><span class="step-text">Enter the email below. Set Status to <strong>Active</strong> and choose a role with <strong>access to all account areas</strong></span></li>
+              <li><span class="step-num">5</span><span class="step-text">Click <strong>Save</strong></span></li>
+            </ol>
+            <div class="emails-section">
+              <div class="emails-label">Add this email — Role: Full Admin</div>
+              <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Admin</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+            </div>
+          </div>
+
+          <!-- HubSpot CMS -->
+          <div class="cms-card" id="cms-hubspot">
+            <ol class="steps-list">
+              <li><span class="step-num">1</span><span class="step-text">In your HubSpot account, click the <strong>Settings icon (⚙)</strong> in the main navigation bar</span></li>
+              <li><span class="step-num">2</span><span class="step-text">In the left sidebar, navigate to <strong>Users &amp; Teams</strong></span></li>
+              <li><span class="step-num">3</span><span class="step-text">Click <strong>Create user</strong> in the upper right</span></li>
+              <li><span class="step-num">4</span><span class="step-text">Enter the email below and click <strong>Next</strong></span></li>
+              <li><span class="step-num">5</span><span class="step-text">Select the <strong>Super Administrator</strong> role, then click <strong>Next → Send</strong></span></li>
+            </ol>
+            <div class="emails-section">
+              <div class="emails-label">Invite this email — Role: Super Administrator</div>
+              <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Super Administrator</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+            </div>
+            <div class="help-link"><a href="https://knowledge.hubspot.com/account/how-do-i-add-or-delete-users" target="_blank">HubSpot Help →</a></div>
+          </div>
+
+          <!-- Other -->
+          <div class="cms-card" id="cms-other">
+            <div class="note-box" style="margin-top:0">
+              📬 <strong>Using a different platform?</strong> Reply to your Account Manager's email and let them know which CMS you use. They'll send platform-specific instructions within one business day.
+            </div>
+          </div>
+
+          <button class="mark-done-btn" id="btn-website" onclick="markDone('WordPress','btn-website','','badge-website')" style="margin-top:8px">Mark as Done ✓</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── COMPLETE BANNER ── -->
+    <div class="complete-banner" id="complete-banner">
+      <div class="complete-icon">🎉</div>
+      <h2>You're all set!</h2>
+      <p>Thank you for completing your platform access setup. Your Account Manager has been notified and will confirm receipt shortly. We're excited to get started!</p>
+    </div>
+
+  </div><!-- /portal-body -->
+</div><!-- /portal-main -->
+
+<!-- FOOTER -->
+<footer class="portal-footer">
+  <strong>🔒 Security note:</strong> For your security, never share passwords via email. All access above is granted through official platform invitation flows — NPAccel will never ask for your login credentials.<br><br>
+  Questions? Email <a href="mailto:destiny.martin@npaccel.com" style="color:var(--orange)">destiny.martin@npaccel.com</a> or reply to your Account Manager's onboarding email.
+</footer>
+
+<div class="portal-toast" id="portal-toast"></div>
+
+<script>
+// ── FIREBASE CONFIG ──────────────────────────────────────────────────────────
+const FB_CONFIG = {
+  apiKey:      "AIzaSyBgJHKhGV_WdS9SgIQ0kKKiB4C9NBqhGQo",
+  authDomain:  "npa-onboarding.firebaseapp.com",
+  databaseURL: "https://npa-onboarding-default-rtdb.firebaseio.com",
+  projectId:   "npa-onboarding",
+};
+let db, clientRef;
+let clientId   = null;
+let clientData = null;
+let completed  = [];
+
+// All platform IDs used for progress tracking
+let activePlatforms = [];
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  clientId = params.get('client');
+
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    db = firebase.database();
+  } catch(e) { db = null; }
+
+  if (clientId && db) {
+    // Load client from Firebase
+    db.ref('access_clients').on('value', snap => {
+      const data = snap.val();
+      let found = null;
+      if (data) {
+        if (typeof data === 'object' && !Array.isArray(data)) {
+          found = data[clientId];
+        } else if (Array.isArray(data)) {
+          found = data.find(c => c && c.id === clientId);
+        }
+      }
+      if (found) {
+        clientData = found;
+        completed  = found.completed || [];
+        clientRef  = db.ref('access_clients/' + clientId);
+        renderPortal();
+      } else {
+        // Client ID not found — show generic all-platform view
+        renderPortal();
+      }
+    });
+  } else {
+    // No client ID — show generic view
+    renderPortal();
+  }
+});
+
+function renderPortal() {
+  document.getElementById('portal-loading').style.display = 'none';
+  document.getElementById('portal-main').style.display    = 'block';
+
+  const services = clientData ? clientData.services : 'all';
+  const hasSEO   = ['seo','seo+paid','all'].includes(services);
+  const hasPaid  = ['paid','seo+paid','all'].includes(services);
+
+  // Show client badge
+  if (clientData) {
+    document.getElementById('client-name-display').textContent = clientData.name;
+    document.getElementById('client-badge').style.display = 'inline-flex';
+    // Update contact link to AM
+    if (clientData.am) {
+      document.getElementById('contact-link').textContent = 'Contact ' + clientData.am;
+    }
+  }
+
+  // Build active platform list
+  activePlatforms = [];
+
+  if (hasSEO) {
+    document.getElementById('section-google').style.display = 'block';
+    activePlatforms.push('GA4','GSC','GTM','GBP');
+    updateSectionCount('google', 4);
+  }
+  if (hasPaid) {
+    document.getElementById('section-paid').style.display = 'block';
+    activePlatforms.push('Google Ads','Meta Ads','Microsoft Ads');
+    updateSectionCount('paid', 3);
+  }
+  if (hasSEO || hasPaid || services === 'all') {
+    document.getElementById('section-website').style.display = 'block';
+    activePlatforms.push('WordPress'); // generic website placeholder
+  }
+
+  // Apply existing completions
+  completed.forEach(p => applyDone(p, false));
+  updateProgress();
+}
+
+function updateSectionCount(section, total) {
+  const el = document.getElementById(section + '-count');
+  if (el) el.textContent = total + ' platforms';
+}
+
+// ── CARD TOGGLE ──────────────────────────────────────────────────────────────
+function toggleCard(id) {
+  const body   = document.getElementById('body-' + id);
+  const expand = document.getElementById('expand-' + id);
+  const header = body ? body.previousElementSibling : null;
+  if (!body) return;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  if (header) header.classList.toggle('open', !isOpen);
+  if (expand) expand.textContent = isOpen ? '▾' : '▴';
+}
+
+// ── CMS SELECTOR ─────────────────────────────────────────────────────────────
+function selectCMS(cms, btn) {
+  document.querySelectorAll('.cms-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.cms-card').forEach(c => c.classList.remove('visible'));
+  btn.classList.add('active');
+  const card = document.getElementById('cms-' + cms);
+  if (card) card.classList.add('visible');
+  // Update the icon for the website card
+  const icon = document.querySelector('#card-website .platform-icon') ||
+               document.querySelector('[id^="body-website"]')?.closest('.platform-card')?.querySelector('.platform-icon');
+  const labels = { wordpress:'WP', squarespace:'SS', wix:'WX', webflow:'WF', shopify:'SH', bigcommerce:'BC', hubspot:'HS', other:'?' };
+  const colors = { wordpress:'#21759B', squarespace:'#222', wix:'#FAAD00', webflow:'#4353FF', shopify:'#96BF48', bigcommerce:'#34313F', hubspot:'#FF7A59', other:'#6B7280' };
+  if (icon) {
+    icon.textContent = labels[cms] || '?';
+    icon.style.background = colors[cms] || '#6B7280';
+  }
+}
+
+// ── MARK AS DONE ─────────────────────────────────────────────────────────────
+function applyDone(platform, animate) {
+  // Find button and card by matching platform attribute
+  const card = document.querySelector(`[data-platform="${platform}"]`);
+  if (!card) return;
+  const cardId = card.id.replace('card-', '');
+  const btn    = document.getElementById('btn-' + cardId);
+  const badge  = document.getElementById('badge-' + cardId);
+
+  if (btn)   { btn.textContent = '✓ Done'; btn.classList.add('done'); btn.disabled = true; }
+  if (badge) { badge.style.display = 'inline-flex'; }
+  card.classList.add('done');
+
+  if (animate) {
+    // Open the card briefly, then close after showing done state
+    setTimeout(() => {
+      const body = document.getElementById('body-' + cardId);
+      if (body && body.classList.contains('open')) toggleCard(cardId);
+    }, 800);
+  }
+}
+
+function markDone(platform, btnId, cardId, badgeId) {
+  if (completed.includes(platform)) return;
+  completed.push(platform);
+
+  applyDone(platform, true);
+  updateProgress();
+  saveToFirebase();
+  showToast('✓ ' + platform + ' marked as complete');
+}
+
+function saveToFirebase() {
+  if (!clientRef) return;
+  clientRef.update({ completed });
+}
+
+// ── PROGRESS ─────────────────────────────────────────────────────────────────
+function updateProgress() {
+  const total = activePlatforms.length;
+  if (total === 0) return;
+  // Count how many active platforms are completed
+  const done = activePlatforms.filter(p => completed.includes(p)).length;
+  const pct  = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  document.getElementById('progress-text').textContent = done + ' of ' + total + ' platforms complete';
+  document.getElementById('progress-pct').textContent  = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  if (done >= total && total > 0) {
+    document.getElementById('progress-complete-msg').style.display = 'block';
+    document.getElementById('complete-banner').style.display = 'block';
+    document.getElementById('complete-banner').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+// ── UTILITIES ─────────────────────────────────────────────────────────────────
+function copyEmail(email, btn) {
+  navigator.clipboard.writeText(email).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('portal-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>

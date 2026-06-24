@@ -1517,7 +1517,7 @@ function switchTab(name) {
 // ═══════════════════════════════════════════════════════════════════════════
 // ACCESS TRACKER
 // ═══════════════════════════════════════════════════════════════════════════
-const AT_PORTAL_URL = 'https://kwmoore22.github.io/npa-access-portal/';
+const AT_PORTAL_URL = 'https://kwmoore22.github.io/npa-onboarding/portal.html';
 const AT_PLATFORMS_SEO   = ['GA4', 'GSC', 'GTM', 'GBP', 'WordPress'];
 const AT_PLATFORMS_PAID  = ['Google Ads', 'Meta Ads', 'Microsoft Ads'];
 const AT_PLATFORMS_EMAIL = ['Klaviyo', 'Mailchimp / ESP'];
@@ -1623,7 +1623,7 @@ function atRender() {
       <div class="at-detail" id="at-detail-${client.id}">
         <div class="at-detail-grid">${detailChecks}</div>
         <div class="at-detail-actions">
-          <button class="at-action-btn primary" onclick="atCopyPortalLinkForClient(event)">Copy client portal link</button>
+          <button class="at-action-btn primary" onclick="atCopyPortalLinkForClient(event,'${client.id}')">Copy client portal link</button>
           <button class="at-action-btn secondary" onclick="atCopyFollowUp('${client.id}', event)">Copy follow-up email</button>
           ${removeBtn}
         </div>
@@ -1709,18 +1709,26 @@ function atRemoveClient(id) {
 
 function atSave() {
   if (FIREBASE_ENABLED && atDbRef) {
-    atDbRef.set(atClients);
+    // Store as object keyed by client ID so portal.html can write to individual records
+    const obj = {};
+    atClients.forEach(c => { obj[c.id] = c; });
+    atDbRef.set(obj);
   } else {
     localStorage.setItem('npa_tracker_clients', JSON.stringify(atClients));
   }
+}
+
+function atPortalUrl(clientId) {
+  return clientId ? AT_PORTAL_URL + '?client=' + clientId : AT_PORTAL_URL;
 }
 
 function atCopyPortalLink() {
   navigator.clipboard.writeText(AT_PORTAL_URL).then(() => toast('Portal link copied'));
 }
 
-function atCopyPortalLinkForClient(event) {
-  navigator.clipboard.writeText(AT_PORTAL_URL).then(() => {
+function atCopyPortalLinkForClient(event, clientId) {
+  const url = atPortalUrl(clientId);
+  navigator.clipboard.writeText(url).then(() => {
     const btn = event.target;
     const orig = btn.textContent;
     btn.textContent = 'Copied!';
@@ -1749,12 +1757,13 @@ function atInitFirebase() {
   atDbRef = firebase.database().ref(AT_DB_PATH);
   atDbRef.on('value', snap => {
     const data = snap.val();
-    if (Array.isArray(data)) {
-      atClients = data;
-    } else if (data && typeof data === 'object') {
-      atClients = Object.values(data);
-    } else {
+    if (!data) {
       atClients = [];
+    } else if (Array.isArray(data)) {
+      atClients = data.filter(Boolean);
+    } else {
+      // Object keyed by client ID (new format)
+      atClients = Object.values(data).filter(Boolean);
     }
     if (document.getElementById('view-access').style.display !== 'none') atRender();
   });
