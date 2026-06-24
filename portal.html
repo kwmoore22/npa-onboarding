@@ -167,6 +167,14 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
   <div>Loading your setup…</div>
 </div>
 
+<!-- ACCESS DENIED -->
+<div id="portal-denied" style="display:none;text-align:center;padding:80px 24px;max-width:480px;margin:0 auto">
+  <div style="font-size:48px;margin-bottom:16px">🔒</div>
+  <h2 style="font-size:20px;font-weight:800;color:#111827;margin-bottom:8px">Invalid access link</h2>
+  <p style="font-size:14px;color:#6B7280;margin-bottom:20px">This link is invalid or has expired. Please contact your Account Manager for a new link.</p>
+  <a href="mailto:destiny.martin@npaccel.com" style="display:inline-block;padding:10px 22px;background:#F15A2B;color:#fff;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none">Contact your Account Manager</a>
+</div>
+
 <!-- MAIN -->
 <div id="portal-main" style="display:none">
   <div class="hero">
@@ -662,7 +670,8 @@ let activePlatforms = [];
 // ── INIT ─────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
-  clientId = params.get('client');
+  clientId     = params.get('client');
+  const urlKey = params.get('key');
 
   try {
     if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
@@ -670,30 +679,35 @@ window.addEventListener('DOMContentLoaded', () => {
   } catch(e) { db = null; }
 
   if (clientId && db) {
-    // Load client from Firebase
-    db.ref('access_clients').on('value', snap => {
-      const data = snap.val();
-      let found = null;
-      if (data) {
-        if (typeof data === 'object' && !Array.isArray(data)) {
-          found = data[clientId];
-        } else if (Array.isArray(data)) {
-          found = data.find(c => c && c.id === clientId);
-        }
-      }
+    // Load client from Firebase, then verify key
+    db.ref('access_clients/' + clientId).once('value', snap => {
+      const found = snap.val();
       if (found) {
+        // Key check — must match if the record has a key set
+        if (found.key && urlKey !== found.key) {
+          document.getElementById('portal-loading').style.display = 'none';
+          document.getElementById('portal-denied').style.display  = 'block';
+          return;
+        }
         clientData = found;
         completed  = found.completed || [];
         clientRef  = db.ref('access_clients/' + clientId);
+        // Listen for live updates (AM may update services, etc.)
+        db.ref('access_clients/' + clientId).on('value', snap2 => {
+          const live = snap2.val();
+          if (live) { completed = live.completed || []; updateProgress(); }
+        });
         renderPortal();
       } else {
-        // Client ID not found — show generic all-platform view
-        renderPortal();
+        // Client ID not in Firebase — deny access
+        document.getElementById('portal-loading').style.display = 'none';
+        document.getElementById('portal-denied').style.display  = 'block';
       }
     });
-  } else {
-    // No client ID — show generic view
-    renderPortal();
+  } else if (!clientId) {
+    // No client ID at all — deny access (portal requires a valid link)
+    document.getElementById('portal-loading').style.display = 'none';
+    document.getElementById('portal-denied').style.display  = 'block';
   }
 });
 

@@ -1622,6 +1622,10 @@ function atRender() {
       </div>
       <div class="at-detail" id="at-detail-${client.id}">
         <div class="at-detail-grid">${detailChecks}</div>
+        <div style="font-size:11px;color:#9CA3AF;margin-bottom:10px">
+          🔑 Access key: <code style="background:#F3F4F6;padding:2px 6px;border-radius:4px;font-size:11px;color:#374151">${client.key || '—'}</code>
+          &nbsp;·&nbsp; <a href="${atPortalUrl(client.id)}" target="_blank" style="color:#3B82F6;font-size:11px">Preview portal →</a>
+        </div>
         <div class="at-detail-actions">
           <button class="at-action-btn primary" onclick="atCopyPortalLinkForClient(event,'${client.id}')">Copy client portal link</button>
           <button class="at-action-btn secondary" onclick="atCopyFollowUp('${client.id}', event)">Copy follow-up email</button>
@@ -1686,13 +1690,17 @@ function atCloseModal() {
   document.getElementById('at-modal').classList.remove('open');
 }
 
+function atGenKey() {
+  return Math.random().toString(36).substring(2, 10).toUpperCase();
+}
+
 function atSaveClient() {
   const name     = document.getElementById('at-input-name').value.trim();
   const am       = document.getElementById('at-input-am').value.trim();
   const date     = document.getElementById('at-input-date').value;
   const services = document.getElementById('at-input-services').value;
   if (!name || !am || !date) { alert('Please fill in all fields.'); return; }
-  atClients.push({ id: Date.now().toString(), name, am, signedDate: date, services, completed: [] });
+  atClients.push({ id: Date.now().toString(), key: atGenKey(), name, am, signedDate: date, services, completed: [] });
   atSave();
   atCloseModal();
   atRender();
@@ -1719,7 +1727,9 @@ function atSave() {
 }
 
 function atPortalUrl(clientId) {
-  return clientId ? AT_PORTAL_URL + '?client=' + clientId : AT_PORTAL_URL;
+  const client = atClients.find(c => c.id === clientId);
+  const key    = client && client.key ? '&key=' + client.key : '';
+  return clientId ? AT_PORTAL_URL + '?client=' + clientId + key : AT_PORTAL_URL;
 }
 
 function atCopyPortalLink() {
@@ -1780,9 +1790,9 @@ function atGetDemoClients() {
   const d8 = new Date(today); d8.setDate(today.getDate() - 8);
   const d1 = new Date(today); d1.setDate(today.getDate() - 1);
   return [
-    { id: '1', name: 'United WRG', am: 'Rachel May', signedDate: d4.toISOString().split('T')[0], services: 'seo+paid', completed: ['GA4', 'GSC'] },
-    { id: '2', name: 'Sample Client Co.', am: 'Leslie Prince', signedDate: d8.toISOString().split('T')[0], services: 'seo', completed: ['GA4'] },
-    { id: '3', name: 'Apex Roofing', am: 'Austin Webb', signedDate: d1.toISOString().split('T')[0], services: 'paid', completed: [] },
+    { id: '1', key: 'DEMO1111', name: 'United WRG', am: 'Rachel May', signedDate: d4.toISOString().split('T')[0], services: 'seo+paid', completed: ['GA4', 'GSC'] },
+    { id: '2', key: 'DEMO2222', name: 'Sample Client Co.', am: 'Leslie Prince', signedDate: d8.toISOString().split('T')[0], services: 'seo', completed: ['GA4'] },
+    { id: '3', key: 'DEMO3333', name: 'Apex Roofing', am: 'Austin Webb', signedDate: d1.toISOString().split('T')[0], services: 'paid', completed: [] },
   ];
 }
 
