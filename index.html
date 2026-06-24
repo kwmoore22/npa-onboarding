@@ -337,9 +337,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 /* Add client modal */
 .at-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; align-items: center; justify-content: center; }
 .at-modal-overlay.open { display: flex; }
-.at-modal { background: #fff; border-radius: 12px; padding: 28px; width: 440px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+.at-modal { background: #fff; border-radius: 12px; padding: 28px; width: 460px; max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
 .at-modal-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
 .at-modal-sub { font-size: 13px; color: #6B7280; margin-bottom: 20px; }
+/* Platform checklist */
+.at-checklist { border: 1px solid #E5E7EB; border-radius: 8px; overflow: hidden; }
+.at-check-group { border-bottom: 1px solid #F3F4F6; }
+.at-check-group:last-child { border-bottom: none; }
+.at-check-group-head { display: flex; align-items: center; justify-content: space-between; background: #F9FAFB; padding: 7px 12px; }
+.at-check-group-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #6B7280; }
+.at-check-group-toggle { font-size: 11px; color: #3B82F6; cursor: pointer; background: none; border: none; font-family: inherit; font-weight: 600; }
+.at-check-group-toggle:hover { text-decoration: underline; }
+.at-check-item { display: flex; align-items: center; gap: 9px; padding: 7px 12px; cursor: pointer; font-size: 13px; color: #374151; }
+.at-check-item:hover { background: #F9FAFB; }
+.at-check-item input { width: 15px; height: 15px; accent-color: #3B82F6; cursor: pointer; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -599,22 +610,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 <!-- ── ADD CLIENT MODAL ──────────────────────────────────────────────────── -->
 <div class="at-modal-overlay" id="at-modal" onclick="if(event.target.id==='at-modal')atCloseModal()">
   <div class="at-modal" onclick="event.stopPropagation()">
-    <div class="at-modal-title">Add New Client</div>
-    <div class="at-modal-sub">Client will appear in the tracker immediately once added.</div>
+    <div class="at-modal-title" id="at-modal-title">Add New Client</div>
+    <div class="at-modal-sub">Only the platforms you select will appear in this client's portal.</div>
     <div class="form-group"><label class="form-label">Client Name</label><input class="form-input" id="at-input-name" type="text" placeholder="e.g. Acme Corp"></div>
     <div class="form-group"><label class="form-label">Account Manager</label><input class="form-input" id="at-input-am" type="text" placeholder="e.g. Rachel May"></div>
     <div class="form-group"><label class="form-label">Contract Signed Date</label><input class="form-input" id="at-input-date" type="date"></div>
     <div class="form-group">
-      <label class="form-label">Service Lines</label>
-      <select class="form-input" id="at-input-services">
-        <option value="seo">SEO Only</option>
-        <option value="paid">Paid Media Only</option>
-        <option value="seo+paid">SEO + Paid Media</option>
-        <option value="all">All Services (SEO + Paid + Email)</option>
-      </select>
+      <label class="form-label">Platforms This Client Uses</label>
+      <div id="at-platform-checklist" class="at-checklist"></div>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-primary" onclick="atSaveClient()">Add Client</button>
+      <button class="btn btn-primary" id="at-save-btn" onclick="atSaveClient()">Add Client</button>
       <button class="btn btn-secondary" onclick="atCloseModal()">Cancel</button>
     </div>
   </div>
@@ -1518,21 +1524,37 @@ function switchTab(name) {
 // ACCESS TRACKER
 // ═══════════════════════════════════════════════════════════════════════════
 const AT_PORTAL_URL = 'https://kwmoore22.github.io/npa-onboarding/portal.html';
-const AT_PLATFORMS_SEO   = ['GA4', 'GSC', 'GTM', 'GBP', 'WordPress'];
-const AT_PLATFORMS_PAID  = ['Google Ads', 'Meta Ads', 'Microsoft Ads'];
-const AT_PLATFORMS_EMAIL = ['Klaviyo', 'Mailchimp / ESP'];
 const AT_DB_PATH = '/access_clients';
+
+// Master catalog of every platform, grouped. Names here are the canonical
+// identifiers shared with portal.html (data-platform attributes + completion keys).
+const AT_PLATFORM_GROUPS = [
+  { key: 'google',  label: 'SEO / Google',     items: ['GA4', 'GSC', 'GTM', 'GBP', 'Google Merchant Center'] },
+  { key: 'paid',    label: 'Paid Advertising', items: ['Google Ads', 'Meta Ads', 'Microsoft Ads'] },
+  { key: 'website', label: 'Website / CMS',     items: ['Website'] },
+  { key: 'email',   label: 'Email / ESP',       items: ['Klaviyo', 'Omnisend', 'HubSpot (Marketing)', 'ActiveCampaign', 'Salesforce Marketing Cloud', 'Salesforce Pardot', 'MailChimp', 'Zoho', 'Constant Contact'] },
+];
 
 let atClients = [];
 let atCurrentFilter = 'all';
 let atDbRef = null;
+let atEditingId = null;
 
-function atGetPlatforms(services) {
+// Backward-compat: derive a platform list from the old "services" field
+// for any client saved before the per-platform picker existed.
+function atDeriveFromServices(services) {
   let p = [];
-  if (services === 'seo' || services === 'seo+paid' || services === 'all') p = p.concat(AT_PLATFORMS_SEO);
-  if (services === 'paid' || services === 'seo+paid' || services === 'all') p = p.concat(AT_PLATFORMS_PAID);
-  if (services === 'all') p = p.concat(AT_PLATFORMS_EMAIL);
+  if (['seo', 'seo+paid', 'all'].includes(services)) p.push('GA4', 'GSC', 'GTM', 'GBP', 'Website');
+  if (['paid', 'seo+paid', 'all'].includes(services)) p.push('Google Ads', 'Meta Ads', 'Microsoft Ads');
+  if (services === 'all') p.push('Klaviyo');
   return p;
+}
+
+// Returns the platform list for a client — prefers the explicit platforms
+// array, falls back to deriving from the legacy services field.
+function atGetPlatforms(client) {
+  if (client && Array.isArray(client.platforms) && client.platforms.length) return client.platforms;
+  return atDeriveFromServices(client ? client.services : 'all');
 }
 
 function atGetDaysSince(dateStr) {
@@ -1542,7 +1564,7 @@ function atGetDaysSince(dateStr) {
 }
 
 function atGetUrgency(client) {
-  const platforms = atGetPlatforms(client.services);
+  const platforms = atGetPlatforms(client);
   const completed = client.completed || [];
   if (platforms.length > 0 && completed.length >= platforms.length) return 'ok';
   const days = atGetDaysSince(client.signedDate);
@@ -1574,7 +1596,7 @@ function atRender() {
   empty.style.display = filtered.length === 0 ? 'block' : 'none';
 
   filtered.forEach(client => {
-    const platforms = atGetPlatforms(client.services);
+    const platforms = atGetPlatforms(client);
     const completed = client.completed || [];
     const days = atGetDaysSince(client.signedDate);
     const urgency = atGetUrgency(client);
@@ -1603,6 +1625,9 @@ function atRender() {
       </div>`;
     }).join('');
 
+    const editBtn = canEdit
+      ? `<button class="at-action-btn secondary" onclick="atEditClient('${client.id}')">✎ Edit platforms</button>`
+      : '';
     const removeBtn = canEdit
       ? `<button class="at-action-btn danger" onclick="atRemoveClient('${client.id}')">Remove Client</button>`
       : '';
@@ -1629,6 +1654,7 @@ function atRender() {
         <div class="at-detail-actions">
           <button class="at-action-btn primary" onclick="atCopyPortalLinkForClient(event,'${client.id}')">Copy client portal link</button>
           <button class="at-action-btn secondary" onclick="atCopyFollowUp('${client.id}', event)">Copy follow-up email</button>
+          ${editBtn}
           ${removeBtn}
         </div>
       </div>`;
@@ -1643,7 +1669,7 @@ function atUpdateStats() {
   document.getElementById('at-stat-overdue').textContent  = atClients.filter(c => atGetUrgency(c) === 'overdue').length;
   document.getElementById('at-stat-warn').textContent     = atClients.filter(c => atGetUrgency(c) === 'warning').length;
   document.getElementById('at-stat-complete').textContent = atClients.filter(c => {
-    const p = atGetPlatforms(c.services);
+    const p = atGetPlatforms(c);
     return p.length > 0 && p.every(pl => (c.completed || []).includes(pl));
   }).length;
   document.getElementById('at-count-all').textContent     = atClients.length;
@@ -1677,17 +1703,66 @@ function atFilter(filter, btn) {
   atRender();
 }
 
-function atOpenModal() {
+function atRenderChecklist(selected) {
+  selected = selected || [];
+  const box = document.getElementById('at-platform-checklist');
+  box.innerHTML = AT_PLATFORM_GROUPS.map(group => {
+    const labelFor = name => name === 'Website' ? 'Website / CMS' : name;
+    const items = group.items.map(name => `
+      <label class="at-check-item">
+        <input type="checkbox" class="at-platform-cb" data-group="${group.key}" value="${name}" ${selected.includes(name) ? 'checked' : ''}>
+        <span>${labelFor(name)}</span>
+      </label>`).join('');
+    return `<div class="at-check-group">
+      <div class="at-check-group-head">
+        <span class="at-check-group-label">${group.label}</span>
+        <button type="button" class="at-check-group-toggle" onclick="atToggleGroup('${group.key}')">Select all</button>
+      </div>
+      ${items}
+    </div>`;
+  }).join('');
+}
+
+function atToggleGroup(groupKey) {
+  const boxes = document.querySelectorAll(`.at-platform-cb[data-group="${groupKey}"]`);
+  const allChecked = Array.from(boxes).every(b => b.checked);
+  boxes.forEach(b => b.checked = !allChecked);
+}
+
+function atGetCheckedPlatforms() {
+  return Array.from(document.querySelectorAll('.at-platform-cb:checked')).map(b => b.value);
+}
+
+function atOpenModal(editId) {
   if (!perms().canManage) return;
-  document.getElementById('at-input-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('at-input-name').value = '';
-  document.getElementById('at-input-am').value = '';
+  atEditingId = editId || null;
+  const titleEl = document.getElementById('at-modal-title');
+  const saveBtn = document.getElementById('at-save-btn');
+
+  if (atEditingId) {
+    const c = atClients.find(x => x.id === atEditingId);
+    if (!c) return;
+    titleEl.textContent = 'Edit Client';
+    saveBtn.textContent = 'Save Changes';
+    document.getElementById('at-input-name').value = c.name;
+    document.getElementById('at-input-am').value   = c.am;
+    document.getElementById('at-input-date').value = c.signedDate;
+    atRenderChecklist(atGetPlatforms(c));
+  } else {
+    titleEl.textContent = 'Add New Client';
+    saveBtn.textContent = 'Add Client';
+    document.getElementById('at-input-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('at-input-name').value = '';
+    document.getElementById('at-input-am').value   = '';
+    atRenderChecklist([]);
+  }
   document.getElementById('at-modal').classList.add('open');
   document.getElementById('at-input-name').focus();
 }
 
 function atCloseModal() {
   document.getElementById('at-modal').classList.remove('open');
+  atEditingId = null;
 }
 
 function atGenKey() {
@@ -1695,16 +1770,33 @@ function atGenKey() {
 }
 
 function atSaveClient() {
-  const name     = document.getElementById('at-input-name').value.trim();
-  const am       = document.getElementById('at-input-am').value.trim();
-  const date     = document.getElementById('at-input-date').value;
-  const services = document.getElementById('at-input-services').value;
-  if (!name || !am || !date) { alert('Please fill in all fields.'); return; }
-  atClients.push({ id: Date.now().toString(), key: atGenKey(), name, am, signedDate: date, services, completed: [] });
+  const name      = document.getElementById('at-input-name').value.trim();
+  const am        = document.getElementById('at-input-am').value.trim();
+  const date      = document.getElementById('at-input-date').value;
+  const platforms = atGetCheckedPlatforms();
+  if (!name || !am || !date) { alert('Please fill in client name, AM, and signed date.'); return; }
+  if (!platforms.length) { alert('Select at least one platform for this client.'); return; }
+
+  if (atEditingId) {
+    const c = atClients.find(x => x.id === atEditingId);
+    if (c) {
+      c.name = name; c.am = am; c.signedDate = date; c.platforms = platforms;
+      // prune completions for platforms no longer assigned
+      c.completed = (c.completed || []).filter(p => platforms.includes(p));
+      delete c.services; // migrate off legacy field
+    }
+    toast('Client updated');
+  } else {
+    atClients.push({ id: Date.now().toString(), key: atGenKey(), name, am, signedDate: date, platforms, completed: [] });
+    toast('Client added');
+  }
   atSave();
   atCloseModal();
   atRender();
-  toast('Client added');
+}
+
+function atEditClient(id) {
+  atOpenModal(id);
 }
 
 function atRemoveClient(id) {
@@ -1749,7 +1841,7 @@ function atCopyPortalLinkForClient(event, clientId) {
 function atCopyFollowUp(id, event) {
   const client = atClients.find(c => c.id === id);
   if (!client) return;
-  const platforms = atGetPlatforms(client.services);
+  const platforms = atGetPlatforms(client);
   const pending = platforms.filter(p => !(client.completed || []).includes(p));
   if (pending.length === 0) { toast('All platforms complete — no follow-up needed'); return; }
   const days = atGetDaysSince(client.signedDate);
@@ -1790,9 +1882,9 @@ function atGetDemoClients() {
   const d8 = new Date(today); d8.setDate(today.getDate() - 8);
   const d1 = new Date(today); d1.setDate(today.getDate() - 1);
   return [
-    { id: '1', key: 'DEMO1111', name: 'United WRG', am: 'Rachel May', signedDate: d4.toISOString().split('T')[0], services: 'seo+paid', completed: ['GA4', 'GSC'] },
+    { id: '1', key: 'DEMO1111', name: 'United WRG', am: 'Rachel May', signedDate: d4.toISOString().split('T')[0], platforms: ['GA4','GSC','GTM','GBP','Website','Google Ads','Meta Ads','Klaviyo'], completed: ['GA4', 'GSC'] },
     { id: '2', key: 'DEMO2222', name: 'Sample Client Co.', am: 'Leslie Prince', signedDate: d8.toISOString().split('T')[0], services: 'seo', completed: ['GA4'] },
-    { id: '3', key: 'DEMO3333', name: 'Apex Roofing', am: 'Austin Webb', signedDate: d1.toISOString().split('T')[0], services: 'paid', completed: [] },
+    { id: '3', key: 'DEMO3333', name: 'Apex Roofing', am: 'Austin Webb', signedDate: d1.toISOString().split('T')[0], platforms: ['Google Ads','Meta Ads','Microsoft Ads'], completed: [] },
   ];
 }
 

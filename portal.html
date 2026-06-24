@@ -187,7 +187,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
   <div class="portal-body">
 
     <!-- ── GOOGLE PLATFORMS ─────────────────────────────────────── -->
-    <div id="section-google" style="display:none">
+    <div id="section-google" data-section style="display:none">
       <div class="section-header">
         <h2>🔵 Google Platforms</h2>
         <div class="section-divider"></div>
@@ -332,7 +332,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
       </div>
 
       <!-- Google Merchant Center -->
-      <div class="platform-card" id="card-gmc" data-platform="GMC" style="display:none">
+      <div class="platform-card" id="card-gmc" data-platform="Google Merchant Center" style="display:none">
         <div class="card-header" onclick="toggleCard('gmc')">
           <div class="platform-icon" style="background:#FBBC04;color:#1A1A1A">GM</div>
           <div class="card-info">
@@ -360,14 +360,14 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
             <div class="email-chip"><span><span class="email-addr">torik@npaccel.com</span><span class="email-role">Admin</span></span><button class="copy-email-btn" onclick="copyEmail('torik@npaccel.com',this)">Copy</button></div>
             <div class="email-chip"><span><span class="email-addr">kelseyh@npaccel.com</span><span class="email-role">Admin</span></span><button class="copy-email-btn" onclick="copyEmail('kelseyh@npaccel.com',this)">Copy</button></div>
           </div>
-          <button class="mark-done-btn" id="btn-gmc" onclick="markDone('GMC','btn-gmc','card-gmc','badge-gmc')">Mark as Done ✓</button>
+          <button class="mark-done-btn" id="btn-gmc" onclick="markDone('Google Merchant Center')">Mark as Done ✓</button>
           <div class="help-link"><a href="https://support.google.com/merchants/answer/188656" target="_blank">Merchant Center Help →</a></div>
         </div>
       </div>
     </div>
 
     <!-- ── PAID MEDIA ─────────────────────────────────────────────── -->
-    <div id="section-paid" style="display:none">
+    <div id="section-paid" data-section style="display:none">
       <div class="section-header">
         <h2>📣 Paid Advertising</h2>
         <div class="section-divider"></div>
@@ -475,14 +475,14 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
     </div>
 
     <!-- ── WEBSITE ACCESS ──────────────────────────────────────────── -->
-    <div id="section-website" style="display:none">
+    <div id="section-website" data-section style="display:none">
       <div class="section-header">
         <h2>🌐 Website Access</h2>
         <div class="section-divider"></div>
         <div class="section-count">Select your platform below</div>
       </div>
 
-      <div class="platform-card">
+      <div class="platform-card" id="card-website" data-platform="Website">
         <div class="card-header" onclick="toggleCard('website')">
           <div class="platform-icon" style="background:#6B7280">WP</div>
           <div class="card-info">
@@ -628,7 +628,270 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
             </div>
           </div>
 
-          <button class="mark-done-btn" id="btn-website" onclick="markDone('WordPress','btn-website','','badge-website')" style="margin-top:8px">Mark as Done ✓</button>
+          <button class="mark-done-btn" id="btn-website" onclick="markDone('Website')" style="margin-top:8px">Mark as Done ✓</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EMAIL / ESP ─────────────────────────────────────────────── -->
+    <div id="section-email" data-section style="display:none">
+      <div class="section-header">
+        <h2>✉️ Email Marketing</h2>
+        <div class="section-divider"></div>
+        <div class="section-count" id="email-count"></div>
+      </div>
+
+      <!-- Klaviyo -->
+      <div class="platform-card" id="card-klaviyo" data-platform="Klaviyo">
+        <div class="card-header" onclick="toggleCard('klaviyo')">
+          <div class="platform-icon" style="background:#232426">Kl</div>
+          <div class="card-info">
+            <div class="card-title">Klaviyo</div>
+            <div class="card-subtitle">Email &amp; SMS marketing automation</div>
+          </div>
+          <div class="card-status"><span class="done-badge" id="badge-klaviyo" style="display:none">✓ Done</span><span class="expand-icon" id="expand-klaviyo">▾</span></div>
+        </div>
+        <div class="card-body" id="body-klaviyo">
+          <div class="why-box"><strong>Why we need this:</strong> Admin access lets us build and send campaigns, manage flows, lists, and segments, and pull the analytics needed to report on performance.</div>
+          <div class="note-box">📌 We require the <strong>Admin</strong> role — the Manager role restricts flows, lists, segments, and analytics, which limits delivery and reporting.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Log in to <a href="https://www.klaviyo.com" target="_blank" style="color:var(--blue)">Klaviyo</a></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Click your account name (bottom-left) → <strong>Settings</strong> → <strong>Users</strong></span></li>
+            <li><span class="step-num">3</span><span class="step-text">Click <strong>Add New User</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Enter the email below and set the role to <strong>Admin</strong></span></li>
+            <li><span class="step-num">5</span><span class="step-text">Click <strong>Add User</strong></span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Invite this email — Role: Admin</div>
+            <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Admin</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-klaviyo" onclick="markDone('Klaviyo')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://help.klaviyo.com" target="_blank">Klaviyo Help →</a></div>
+        </div>
+      </div>
+
+      <!-- Omnisend -->
+      <div class="platform-card" id="card-omnisend" data-platform="Omnisend">
+        <div class="card-header" onclick="toggleCard('omnisend')">
+          <div class="platform-icon" style="background:#5B2DEF">Om</div>
+          <div class="card-info">
+            <div class="card-title">Omnisend</div>
+            <div class="card-subtitle">Ecommerce email &amp; SMS marketing</div>
+          </div>
+          <div class="card-status"><span class="done-badge" id="badge-omnisend" style="display:none">✓ Done</span><span class="expand-icon" id="expand-omnisend">▾</span></div>
+        </div>
+        <div class="card-body" id="body-omnisend">
+          <div class="why-box"><strong>Why we need this:</strong> Admin access lets us manage campaigns, automations, and audiences and export the contact and performance data needed for reporting.</div>
+          <div class="note-box">📌 We require the <strong>Admin</strong> role — Managers can't export contacts and reports.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Log in to <a href="https://www.omnisend.com" target="_blank" style="color:var(--blue)">Omnisend</a></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Click your profile → <strong>My account</strong> → <strong>Sub-accounts</strong> (or Users)</span></li>
+            <li><span class="step-num">3</span><span class="step-text">Click <strong>Add sub-account</strong> / <strong>Invite user</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Enter the email below and set the role to <strong>Admin</strong></span></li>
+            <li><span class="step-num">5</span><span class="step-text">Send the invitation</span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Invite this email — Role: Admin</div>
+            <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Admin</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-omnisend" onclick="markDone('Omnisend')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://support.omnisend.com" target="_blank">Omnisend Help →</a></div>
+        </div>
+      </div>
+
+      <!-- HubSpot (Marketing) -->
+      <div class="platform-card" id="card-hubspot-mkt" data-platform="HubSpot (Marketing)">
+        <div class="card-header" onclick="toggleCard('hubspot-mkt')">
+          <div class="platform-icon" style="background:#FF7A59">HS</div>
+          <div class="card-info">
+            <div class="card-title">HubSpot (Marketing)</div>
+            <div class="card-subtitle">Email, automation &amp; marketing tools</div>
+          </div>
+          <div class="card-status"><span class="done-badge" id="badge-hubspot-mkt" style="display:none">✓ Done</span><span class="expand-icon" id="expand-hubspot-mkt">▾</span></div>
+        </div>
+        <div class="card-body" id="body-hubspot-mkt">
+          <div class="why-box"><strong>Why we need this:</strong> We need access to all <strong>Marketing tools</strong> — email, workflows, lists, forms, and reporting — to run and measure your email program.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Click the <strong>Settings icon (⚙)</strong> in the main navigation bar</span></li>
+            <li><span class="step-num">2</span><span class="step-text">In the left sidebar, go to <strong>Users &amp; Teams</strong></span></li>
+            <li><span class="step-num">3</span><span class="step-text">Click <strong>Create user</strong> in the upper right</span></li>
+            <li><span class="step-num">4</span><span class="step-text">Enter the email below → <strong>Next</strong></span></li>
+            <li><span class="step-num">5</span><span class="step-text">Grant access to <strong>all Marketing tools</strong> (or assign Super Admin) → <strong>Next → Send</strong></span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Invite this email — Access: All Marketing tools</div>
+            <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Marketing access</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-hubspot-mkt" onclick="markDone('HubSpot (Marketing)')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://knowledge.hubspot.com/account/how-do-i-add-or-delete-users" target="_blank">HubSpot Help →</a></div>
+        </div>
+      </div>
+
+      <!-- ActiveCampaign -->
+      <div class="platform-card" id="card-activecampaign" data-platform="ActiveCampaign">
+        <div class="card-header" onclick="toggleCard('activecampaign')">
+          <div class="platform-icon" style="background:#356AE6">AC</div>
+          <div class="card-info">
+            <div class="card-title">ActiveCampaign</div>
+            <div class="card-subtitle">Email marketing &amp; automation</div>
+          </div>
+          <div class="card-status"><span class="done-badge" id="badge-activecampaign" style="display:none">✓ Done</span><span class="expand-icon" id="expand-activecampaign">▾</span></div>
+        </div>
+        <div class="card-body" id="body-activecampaign">
+          <div class="why-box"><strong>Why we need this:</strong> We need access to all <strong>Marketing tools</strong> — campaigns, automations, contacts, and reporting — to manage and optimize your email program.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Log in to <a href="https://www.activecampaign.com" target="_blank" style="color:var(--blue)">ActiveCampaign</a></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Go to <strong>Settings</strong> → <strong>Users</strong></span></li>
+            <li><span class="step-num">3</span><span class="step-text">Click <strong>Add New User</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Enter the email below and assign a group with <strong>full Marketing access</strong> (Admin)</span></li>
+            <li><span class="step-num">5</span><span class="step-text">Click <strong>Save</strong></span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Invite this email — Access: All Marketing tools</div>
+            <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Admin</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-activecampaign" onclick="markDone('ActiveCampaign')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://help.activecampaign.com" target="_blank">ActiveCampaign Help →</a></div>
+        </div>
+      </div>
+
+      <!-- Salesforce Marketing Cloud -->
+      <div class="platform-card" id="card-sfmc" data-platform="Salesforce Marketing Cloud">
+        <div class="card-header" onclick="toggleCard('sfmc')">
+          <div class="platform-icon" style="background:#00A1E0">MC</div>
+          <div class="card-info">
+            <div class="card-title">Salesforce Marketing Cloud</div>
+            <div class="card-subtitle">Enterprise email &amp; journey marketing</div>
+          </div>
+          <div class="card-status"><span class="done-badge" id="badge-sfmc" style="display:none">✓ Done</span><span class="expand-icon" id="expand-sfmc">▾</span></div>
+        </div>
+        <div class="card-body" id="body-sfmc">
+          <div class="why-box"><strong>Why we need this:</strong> The <strong>Administrator</strong> role in Email Studio lets us build, send, and report on campaigns and manage data extensions and automations.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Log in to <a href="https://mc.exacttarget.com" target="_blank" style="color:var(--blue)">Marketing Cloud</a></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Go to <strong>Setup</strong> → <strong>Users</strong> → <strong>Users</strong></span></li>
+            <li><span class="step-num">3</span><span class="step-text">Click <strong>Create</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Enter the email below and assign the <strong>Administrator</strong> role</span></li>
+            <li><span class="step-num">5</span><span class="step-text">Click <strong>Save</strong></span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Add this email — Role: Administrator</div>
+            <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Administrator</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-sfmc" onclick="markDone('Salesforce Marketing Cloud')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://help.salesforce.com" target="_blank">Salesforce Help →</a></div>
+        </div>
+      </div>
+
+      <!-- Salesforce Pardot -->
+      <div class="platform-card" id="card-pardot" data-platform="Salesforce Pardot">
+        <div class="card-header" onclick="toggleCard('pardot')">
+          <div class="platform-icon" style="background:#1798C1">Pd</div>
+          <div class="card-info">
+            <div class="card-title">Salesforce Pardot</div>
+            <div class="card-subtitle">B2B marketing automation (Account Engagement)</div>
+          </div>
+          <div class="card-status"><span class="done-badge" id="badge-pardot" style="display:none">✓ Done</span><span class="expand-icon" id="expand-pardot">▾</span></div>
+        </div>
+        <div class="card-body" id="body-pardot">
+          <div class="why-box"><strong>Why we need this:</strong> The <strong>Marketing</strong> role lets us build emails, automations, and forms and access the reporting needed to manage your program.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Log in to <a href="https://login.salesforce.com" target="_blank" style="color:var(--blue)">Account Engagement (Pardot)</a></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Go to <strong>Settings</strong> → <strong>User Management</strong> → <strong>Users</strong></span></li>
+            <li><span class="step-num">3</span><span class="step-text">Click <strong>Add User</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Enter the email below and assign the <strong>Marketing</strong> role</span></li>
+            <li><span class="step-num">5</span><span class="step-text">Click <strong>Save</strong></span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Add this email — Role: Marketing</div>
+            <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Marketing</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-pardot" onclick="markDone('Salesforce Pardot')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://help.salesforce.com" target="_blank">Salesforce Help →</a></div>
+        </div>
+      </div>
+
+      <!-- MailChimp -->
+      <div class="platform-card" id="card-mailchimp" data-platform="MailChimp">
+        <div class="card-header" onclick="toggleCard('mailchimp')">
+          <div class="platform-icon" style="background:#FFE01B;color:#1A1A1A">Mc</div>
+          <div class="card-info">
+            <div class="card-title">Mailchimp</div>
+            <div class="card-subtitle">Email marketing &amp; automation</div>
+          </div>
+          <div class="card-status"><span class="done-badge" id="badge-mailchimp" style="display:none">✓ Done</span><span class="expand-icon" id="expand-mailchimp">▾</span></div>
+        </div>
+        <div class="card-body" id="body-mailchimp">
+          <div class="why-box"><strong>Why we need this:</strong> The <strong>Manager</strong> role lets us create and send campaigns, build automations, and manage audiences and reports.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Log in to <a href="https://login.mailchimp.com" target="_blank" style="color:var(--blue)">Mailchimp</a></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Click your profile → <strong>Account &amp; billing</strong> → <strong>Settings</strong> → <strong>Users</strong></span></li>
+            <li><span class="step-num">3</span><span class="step-text">Click <strong>Invite a user</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Enter the email below and set the role to <strong>Manager</strong></span></li>
+            <li><span class="step-num">5</span><span class="step-text">Click <strong>Send invite</strong></span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Invite this email — Role: Manager</div>
+            <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Manager</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-mailchimp" onclick="markDone('MailChimp')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://mailchimp.com/help/" target="_blank">Mailchimp Help →</a></div>
+        </div>
+      </div>
+
+      <!-- Zoho -->
+      <div class="platform-card" id="card-zoho" data-platform="Zoho">
+        <div class="card-header" onclick="toggleCard('zoho')">
+          <div class="platform-icon" style="background:#E42527">Zo</div>
+          <div class="card-info">
+            <div class="card-title">Zoho Campaigns</div>
+            <div class="card-subtitle">Email marketing &amp; automation</div>
+          </div>
+          <div class="card-status"><span class="done-badge" id="badge-zoho" style="display:none">✓ Done</span><span class="expand-icon" id="expand-zoho">▾</span></div>
+        </div>
+        <div class="card-body" id="body-zoho">
+          <div class="why-box"><strong>Why we need this:</strong> The <strong>Standard user</strong> role lets us build and send campaigns, manage automations, and pull reporting.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Log in to <a href="https://www.zoho.com/campaigns/" target="_blank" style="color:var(--blue)">Zoho Campaigns</a></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Go to <strong>Settings</strong> → <strong>User Administration</strong> (Manage Users)</span></li>
+            <li><span class="step-num">3</span><span class="step-text">Click <strong>Add User</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Enter the email below and set the role to <strong>Standard user</strong></span></li>
+            <li><span class="step-num">5</span><span class="step-text">Send the invitation</span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Invite this email — Role: Standard user</div>
+            <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Standard user</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-zoho" onclick="markDone('Zoho')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://help.zoho.com" target="_blank">Zoho Help →</a></div>
+        </div>
+      </div>
+
+      <!-- Constant Contact -->
+      <div class="platform-card" id="card-constantcontact" data-platform="Constant Contact">
+        <div class="card-header" onclick="toggleCard('constantcontact')">
+          <div class="platform-icon" style="background:#1856ED">CC</div>
+          <div class="card-info">
+            <div class="card-title">Constant Contact</div>
+            <div class="card-subtitle">Email marketing</div>
+          </div>
+          <div class="card-status"><span class="done-badge" id="badge-constantcontact" style="display:none">✓ Done</span><span class="expand-icon" id="expand-constantcontact">▾</span></div>
+        </div>
+        <div class="card-body" id="body-constantcontact">
+          <div class="why-box"><strong>Why we need this:</strong> The <strong>Account Manager</strong> role lets us create and send campaigns, manage contacts, and access reporting.</div>
+          <ol class="steps-list">
+            <li><span class="step-num">1</span><span class="step-text">Log in to <a href="https://login.constantcontact.com" target="_blank" style="color:var(--blue)">Constant Contact</a></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Click your profile (top right) → <strong>My Account</strong> → <strong>Account users</strong></span></li>
+            <li><span class="step-num">3</span><span class="step-text">Click <strong>Add a user</strong> / <strong>Invite a user</strong></span></li>
+            <li><span class="step-num">4</span><span class="step-text">Enter the email below and set the role to <strong>Account Manager</strong></span></li>
+            <li><span class="step-num">5</span><span class="step-text">Click <strong>Send invite</strong></span></li>
+          </ol>
+          <div class="emails-section">
+            <div class="emails-label">Invite this email — Role: Account Manager</div>
+            <div class="email-chip"><span><span class="email-addr">analytics2@npaccel.com</span><span class="email-role">Account Manager</span></span><button class="copy-email-btn" onclick="copyEmail('analytics2@npaccel.com',this)">Copy</button></div>
+          </div>
+          <button class="mark-done-btn" id="btn-constantcontact" onclick="markDone('Constant Contact')">Mark as Done ✓</button>
+          <div class="help-link"><a href="https://knowledgebase.constantcontact.com" target="_blank">Constant Contact Help →</a></div>
         </div>
       </div>
     </div>
@@ -711,50 +974,63 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Backward-compat: derive a platform list from the legacy services field
+function deriveFromServices(services) {
+  let p = [];
+  if (['seo','seo+paid','all'].includes(services)) p.push('GA4','GSC','GTM','GBP','Website');
+  if (['paid','seo+paid','all'].includes(services)) p.push('Google Ads','Meta Ads','Microsoft Ads');
+  if (services === 'all') p.push('Klaviyo');
+  return p;
+}
+
 function renderPortal() {
   document.getElementById('portal-loading').style.display = 'none';
   document.getElementById('portal-main').style.display    = 'block';
 
-  const services = clientData ? clientData.services : 'all';
-  const hasSEO   = ['seo','seo+paid','all'].includes(services);
-  const hasPaid  = ['paid','seo+paid','all'].includes(services);
+  // Determine which platforms this client uses
+  let list;
+  if (clientData && Array.isArray(clientData.platforms) && clientData.platforms.length) {
+    list = clientData.platforms;
+  } else {
+    list = deriveFromServices(clientData ? clientData.services : 'all');
+  }
 
-  // Show client badge
+  // Show client badge + AM contact
   if (clientData) {
     document.getElementById('client-name-display').textContent = clientData.name;
     document.getElementById('client-badge').style.display = 'inline-flex';
-    // Update contact link to AM
     if (clientData.am) {
       document.getElementById('contact-link').textContent = 'Contact ' + clientData.am;
     }
   }
 
-  // Build active platform list
+  // Show/hide each platform card based on the client's list
   activePlatforms = [];
+  document.querySelectorAll('.platform-card[data-platform]').forEach(card => {
+    const name = card.getAttribute('data-platform');
+    if (list.includes(name)) {
+      card.style.display = '';
+      activePlatforms.push(name);
+    } else {
+      card.style.display = 'none';
+    }
+  });
 
-  if (hasSEO) {
-    document.getElementById('section-google').style.display = 'block';
-    activePlatforms.push('GA4','GSC','GTM','GBP');
-    updateSectionCount('google', 4);
-  }
-  if (hasPaid) {
-    document.getElementById('section-paid').style.display = 'block';
-    activePlatforms.push('Google Ads','Meta Ads','Microsoft Ads');
-    updateSectionCount('paid', 3);
-  }
-  if (hasSEO || hasPaid || services === 'all') {
-    document.getElementById('section-website').style.display = 'block';
-    activePlatforms.push('WordPress'); // generic website placeholder
-  }
+  // Show a section only if it has at least one visible card; set its count
+  document.querySelectorAll('[data-section]').forEach(sec => {
+    const cards   = sec.querySelectorAll('.platform-card[data-platform]');
+    const visible = Array.from(cards).filter(c => c.style.display !== 'none');
+    sec.style.display = visible.length ? 'block' : 'none';
+    const countEl = sec.querySelector('.section-count');
+    // Don't overwrite the website section's static helper text
+    if (countEl && sec.id !== 'section-website') {
+      countEl.textContent = visible.length + (visible.length === 1 ? ' platform' : ' platforms');
+    }
+  });
 
-  // Apply existing completions
+  // Apply existing completions, then update progress
   completed.forEach(p => applyDone(p, false));
   updateProgress();
-}
-
-function updateSectionCount(section, total) {
-  const el = document.getElementById(section + '-count');
-  if (el) el.textContent = total + ' platforms';
 }
 
 // ── CARD TOGGLE ──────────────────────────────────────────────────────────────
