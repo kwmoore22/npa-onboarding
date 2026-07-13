@@ -340,6 +340,70 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .at-modal { background: #fff; border-radius: 12px; padding: 28px; width: 460px; max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
 .at-modal-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
 .at-modal-sub { font-size: 13px; color: #6B7280; margin-bottom: 20px; }
+
+/* ── ONBOARDING SOP ─────────────────────────────────────────────────────────── */
+#view-sop { display: none; padding: 24px 32px 60px; }
+.sop-wrap { max-width: 1100px; margin: 0 auto; }
+.sop-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+.sop-header h2 { font-size: 19px; font-weight: 800; color: #111; }
+.sop-header p { font-size: 13px; color: #6B7280; margin-top: 4px; max-width: 620px; }
+.sop-legend { display: flex; flex-direction: column; gap: 5px; }
+.sop-leg { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #4B5563; }
+.auto-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.auto-dot.high    { background: #10B981; }
+.auto-dot.partial { background: #F59E0B; }
+.auto-dot.manual  { background: #D1D5DB; border: 1.5px solid #9CA3AF; }
+
+.sop-stats { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+.sop-stat { background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; padding: 14px 18px; flex: 1; min-width: 130px; }
+.sop-stat .n { font-size: 26px; font-weight: 800; color: #111; }
+.sop-stat .l { font-size: 11px; color: #6B7280; text-transform: uppercase; letter-spacing: .4px; margin-top: 2px; }
+.sop-stat.high .n { color: #10B981; }
+.sop-stat.partial .n { color: #D97706; }
+
+.sop-themes { background: #F0FDF4; border: 1px solid #A7F3D0; border-radius: 12px; padding: 20px 22px; margin-bottom: 24px; }
+.sop-themes h3 { font-size: 14px; font-weight: 700; color: #065F46; margin-bottom: 14px; }
+.sop-theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.sop-theme { background: #fff; border: 1px solid #D1FAE5; border-radius: 9px; padding: 13px 15px; }
+.sop-theme .th-title { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 4px; display: flex; align-items: center; gap: 7px; }
+.sop-theme .th-icon { font-size: 16px; }
+.sop-theme .th-desc { font-size: 12px; color: #4B5563; line-height: 1.5; }
+.sop-theme .th-tag { display: inline-block; margin-top: 8px; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: #ECFDF5; color: #047857; }
+
+.sop-filter-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.sop-filter-btn { padding: 5px 14px; border-radius: 20px; border: 1px solid #E5E7EB; background: #fff; color: #4B5563; font-size: 12px; cursor: pointer; font-family: inherit; transition: all .12s; }
+.sop-filter-btn:hover { border-color: #10B981; color: #10B981; }
+.sop-filter-btn.active { background: #10B981; border-color: #10B981; color: #fff; }
+
+.sop-stage { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+.sop-stage-head { display: flex; align-items: center; gap: 12px; padding: 15px 20px; cursor: pointer; user-select: none; background: #F9FAFB; border-bottom: 1px solid #E5E7EB; }
+.sop-stage-head:hover { background: #F3F4F6; }
+.sop-stage-num { width: 26px; height: 26px; border-radius: 7px; background: #111827; color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sop-stage-title { flex: 1; font-size: 15px; font-weight: 700; color: #111; }
+.sop-stage-meta { font-size: 11px; color: #9CA3AF; margin-top: 1px; font-weight: 400; }
+.sop-stage-badges { display: flex; gap: 5px; align-items: center; }
+.sop-mini-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+.sop-mini-badge.high { background: #D1FAE5; color: #065F46; }
+.sop-mini-badge.partial { background: #FEF3C7; color: #92400E; }
+.sop-stage-caret { color: #9CA3AF; font-size: 13px; transition: transform .2s; }
+.sop-stage.open .sop-stage-caret { transform: rotate(180deg); }
+.sop-stage-body { display: none; }
+.sop-stage.open .sop-stage-body { display: block; }
+
+.sop-step { display: flex; gap: 14px; padding: 12px 20px; border-bottom: 1px solid #F3F4F6; align-items: flex-start; }
+.sop-step:last-child { border-bottom: none; }
+.sop-step.hidden { display: none; }
+.sop-step-auto { flex-shrink: 0; width: 90px; }
+.sop-step-badge { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 6px; white-space: nowrap; }
+.sop-step-badge.high { background: #D1FAE5; color: #065F46; }
+.sop-step-badge.partial { background: #FEF3C7; color: #92400E; }
+.sop-step-badge.manual { background: #F3F4F6; color: #6B7280; }
+.sop-step-time { flex-shrink: 0; width: 150px; font-size: 11px; color: #6B7280; line-height: 1.4; }
+.sop-step-main { flex: 1; min-width: 0; }
+.sop-step-action { font-size: 13px; color: #1F2937; line-height: 1.5; }
+.sop-step-how { font-size: 11.5px; color: #059669; margin-top: 4px; line-height: 1.5; }
+.sop-step-how strong { font-weight: 700; }
+.sop-step-res { font-size: 10px; color: #9CA3AF; margin-top: 3px; }
 /* Platform checklist */
 .at-checklist { border: 1px solid #E5E7EB; border-radius: 8px; overflow: hidden; }
 .at-check-group { border-bottom: 1px solid #F3F4F6; }
@@ -457,6 +521,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <button class="view-tab active" id="tab-board" onclick="switchTab('board')">📋 Onboarding Board</button>
     <button class="view-tab" id="tab-miro" onclick="switchTab('miro')">🗂 Miro Reference</button>
     <button class="view-tab" id="tab-access" onclick="switchTab('access')">🔑 Access Tracker</button>
+    <button class="view-tab" id="tab-sop" onclick="switchTab('sop')">📋 Onboarding SOP</button>
   </div>
 
   <div id="view-board">
@@ -519,6 +584,40 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
       allow="fullscreen; clipboard-read; clipboard-write"
       allowfullscreen>
     </iframe>
+  </div>
+
+  <!-- ── ONBOARDING SOP / AUTOMATION VIEW ────────────────────────────────── -->
+  <div id="view-sop">
+    <div class="sop-wrap">
+      <div class="sop-header">
+        <div>
+          <h2>📋 Onboarding SOP &amp; Automation Opportunities</h2>
+          <p>The full 2026 client onboarding checklist — every step rated by how automatable it is, to shorten time-to-value.</p>
+        </div>
+        <div class="sop-legend">
+          <span class="sop-leg"><span class="auto-dot high"></span>Automatable</span>
+          <span class="sop-leg"><span class="auto-dot partial"></span>Assisted / templated</span>
+          <span class="sop-leg"><span class="auto-dot manual"></span>Human judgment</span>
+        </div>
+      </div>
+
+      <div class="sop-stats" id="sop-stats"></div>
+
+      <div class="sop-themes">
+        <h3>🚀 Top automation opportunities</h3>
+        <div class="sop-theme-grid" id="sop-theme-grid"></div>
+      </div>
+
+      <div class="sop-filter-row">
+        <span class="filter-label" style="color:#6B7280">Show:</span>
+        <button class="sop-filter-btn active" onclick="sopFilter('all',this)">All steps</button>
+        <button class="sop-filter-btn" onclick="sopFilter('high',this)">Automatable only</button>
+        <button class="sop-filter-btn" onclick="sopFilter('partial',this)">Assisted only</button>
+        <button class="sop-filter-btn" onclick="sopFilter('manual',this)">Manual only</button>
+      </div>
+
+      <div id="sop-stages"></div>
+    </div>
   </div>
 </div>
 
@@ -1513,11 +1612,220 @@ function switchTab(name) {
   document.getElementById('view-board').style.display  = name === 'board'  ? '' : 'none';
   document.getElementById('view-miro').style.display   = name === 'miro'   ? 'block' : 'none';
   document.getElementById('view-access').style.display = name === 'access' ? 'block' : 'none';
+  document.getElementById('view-sop').style.display    = name === 'sop'    ? 'block' : 'none';
   document.getElementById('tab-board').classList.toggle('active',  name === 'board');
   document.getElementById('tab-miro').classList.toggle('active',   name === 'miro');
   document.getElementById('tab-access').classList.toggle('active', name === 'access');
+  document.getElementById('tab-sop').classList.toggle('active',    name === 'sop');
   document.querySelector('.toolbar').style.display = name === 'board' ? '' : 'none';
   if (name === 'access') atRender();
+  if (name === 'sop')    sopRender();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ONBOARDING SOP + AUTOMATION ANALYSIS
+// Source: "2026 Stages of Client Onboarding Checklist"
+// lvl: high = automatable · partial = assisted/templated · manual = human judgment
+// ═══════════════════════════════════════════════════════════════════════════
+let sopCurrentFilter = 'all';
+
+const SOP_THEMES = [
+  { icon:'🔑', title:'Access collection',       desc:'The client self-serve access portal (already built) replaces email back-and-forth and feeds the tracker live.', tag:'Live now' },
+  { icon:'📅', title:'Call sequencing',          desc:'Auto-schedule the full call series (Welcome → IKA → Strategy → Monthly) plus internal syncs from the assignment date.', tag:'High impact' },
+  { icon:'✅', title:'Deliverable ordering',     desc:'Auto-create ClickUp task bundles per service line from the SOW instead of manual "order X" steps.', tag:'High impact' },
+  { icon:'✉️', title:'Recap & templated emails', desc:'AI-draft recap emails from the ClickUp notetaker transcript; auto-send welcome/follow-up templates.', tag:'Quick win' },
+  { icon:'📊', title:'Deck & report generation', desc:'Auto-populate Welcome / Strategy / Monthly decks from Salesforce, GSC, GA & SEMrush.', tag:'High impact' },
+  { icon:'📝', title:'Notes & logging',          desc:'Notetaker transcripts auto-sync to Clarity and the client details page — no manual note entry.', tag:'Quick win' },
+  { icon:'🏗️', title:'Project provisioning',     desc:'Auto-create the PMO build ticket and SharePoint access the moment a client is assigned.', tag:'Quick win' },
+  { icon:'💰', title:'Recurring reminders',      desc:'Auto-nudge budget confirmations (25th), pending approvals, and post-launch check-ins.', tag:'Quick win' },
+];
+
+const SOP_DATA = [
+  { name:'Pre-Welcome Call', meta:'After client assignment', steps:[
+    { t:'Day of assignment', a:'Schedule 30-min internal sync with AE, GAD & applicable specialists (per SOW), ≥2 days before Welcome Call', lvl:'high', how:'Auto-schedule from SOW — assignment in Salesforce triggers a calendar invite to the mapped roles.' },
+    { t:'Day of assignment', a:'Schedule Welcome Call with AE, GAD, Access Specialist & applicable specialists', lvl:'high', how:'Same assignment trigger auto-books the Welcome Call with the SOW-based attendee list.' },
+    { t:'Day of assignment', a:'Send welcome email introducing AM + Onboarding Specialist; include what-to-expect doc (Paid)', r:'Official Emails & Templates', lvl:'high', how:'Templated auto-send on assignment — Paid clients auto-attach the what-to-expect doc + access portal link.' },
+    { t:'Day of assignment', a:'Ping Access Specialist in Client Access channel that onboarding email was sent', r:'Client Access (Teams)', lvl:'high', how:'Auto-post to the Client Access Teams channel via webhook when the welcome email fires.' },
+    { t:'1–2 days after', a:'Review & familiarize with client website', lvl:'manual', how:'Human review — an AI site summary can pre-brief the AM to speed it up.' },
+    { t:'1–2 days after', a:'Review AE notes in Salesforce + strategy review; add client info to slides', lvl:'partial', how:'Auto-pull Salesforce opportunity notes into the deck template; AM refines.' },
+    { t:'1–2 days after', a:'Block an hour to order post-welcome-call tasks', lvl:'high', how:'Auto-block calendar time as part of the assignment sequence.' },
+    { t:'3 days prior to WC', a:'Finalize Welcome Call deck (final touches post internal sync)', lvl:'partial', how:'Deck auto-generated from template + Salesforce/GA data; AM finalizes.' },
+    { t:'3 days prior to WC', a:'Confirm client access complete; "as is" management begins (Paid)', lvl:'high', how:'The Access Portal already tracks this live — status feeds the tracker automatically.' },
+    { t:'3 days prior to WC', a:'Share Welcome Call deck in channel for Paid specialist to add conversion slides (Accel)', lvl:'partial', how:'Auto-share deck link + tag the Paid specialist when deck status = ready.' },
+    { t:'2–3 days prior to WC', a:'Submit #pmo-support request to build the project (≥2 days prior)', lvl:'high', how:'Auto-create the PMO build ticket from the SOW on assignment — no manual form.' },
+    { t:'1–2 days prior to WC', a:'Confirm all access ≥1 day prior; escalate to GAD if missing', lvl:'partial', how:'Access tracker auto-flags missing platforms and can auto-alert the GAD when overdue.' },
+    { t:'1–2 days prior to WC', a:'Update deck slide with access we have / still need', lvl:'high', how:'Auto-populate the access slide from the tracker’s live status.' },
+    { t:'1–2 days prior to WC', a:'Verify Onboarding Specialist added access to LastPass + ClickUp', lvl:'partial', how:'Sync access-tracker completions into ClickUp / LastPass via integration.' },
+    { t:'1–2 days prior to WC', a:'Ensure ClickUp AI notetaker joins the Welcome Call', lvl:'high', how:'Auto-add the notetaker to every onboarding call invite.' },
+    { t:'1–2 days prior to WC', a:'Set up a place for welcome call notes to share in channel', lvl:'high', how:'Auto-create a notes doc and post the link in the client channel.' },
+  ]},
+  { name:'SEO', meta:'After Welcome Call', steps:[
+    { t:'Day of Welcome Call', a:'Order Initial Keyword Analysis, Competitor Audit, DAI Audit, SME Interview + other onboarding tasks', lvl:'high', how:'Auto-create the SEO onboarding task bundle in ClickUp from the SOW template.' },
+    { t:'Day of WC', a:'Send invite for IKA Call + Content Strategy Call (add writer/editor), 1 wk out', lvl:'high', how:'Auto-schedule the call sequence relative to the Welcome Call date.' },
+    { t:'Day of WC', a:'Send recap email: deck, recording, action items, next dates', r:'Templates', lvl:'partial', how:'AI drafts the recap from the notetaker transcript; AM reviews & sends.' },
+    { t:'0–1 days after WC', a:'Grant client SharePoint access', r:'How to share access', lvl:'high', how:'Auto-provision SharePoint access on project creation.' },
+    { t:'0–1 days after WC', a:'Ensure future calls attended by ClickUp Notetaker', lvl:'high', how:'Notetaker auto-added to the recurring call series.' },
+    { t:'0–1 days after WC', a:'Send invite for Strategy Call 1 wk after IKA + Content Call', lvl:'high', how:'Auto-scheduled in the call sequence.' },
+    { t:'0–1 days after WC', a:'Block an hour to order post-IKA tasks', lvl:'high', how:'Auto-block calendar time in the sequence.' },
+    { t:'1–3 days prior to IKA', a:'Prepare IKA deck (keyword research, content questionnaire, calendar topics)', lvl:'partial', how:'Auto-assemble deck from the keyword-research deliverable; AM adds insight.' },
+    { t:'1–3 days prior to IKA', a:'QA SME prep & prepare to take notes', lvl:'manual', how:'Human prep; notetaker captures the call.' },
+    { t:'0–1 days after IKA', a:'Order Full Keyword Research based on approved target URLs', lvl:'high', how:'Auto-create the task once target URLs are approved in ClickUp.' },
+    { t:'0–1 days after IKA', a:'Order Content Calendar Stage 1 (priorities, competitors, wishlist)', lvl:'high', how:'Auto-create with SOW context pre-filled.' },
+    { t:'2–3 days prior to Strategy', a:'Create campaign roadmap from SOW (PM can also do)', lvl:'partial', how:'Auto-generate a roadmap draft from the SOW; team refines.' },
+    { t:'2–3 days prior to Strategy', a:'Review all audits: keyword research, content calendar, competitor analysis', lvl:'manual', how:'Human review — AI can summarize audit findings first.' },
+    { t:'2–3 days prior to Strategy', a:'Prep Strategy Deck + set Month 1 & DAI call times', lvl:'partial', how:'Auto-build deck shell + auto-schedule the two calls.' },
+    { t:'1–2 days prior to Strategy', a:'Schedule internal sync to review deliverables (SEO Specialist + GAD)', lvl:'high', how:'Auto-schedule the internal sync in the sequence.' },
+    { t:'0–1 days after Strategy', a:'Order remaining audits: Technical, Core Web Vitals, Internal Linking, Content', lvl:'high', how:'Auto-create the audit bundle in ClickUp.' },
+    { t:'0–1 days after Strategy', a:'Order Content Calendar Phase 2', lvl:'high', how:'Auto-created task.' },
+    { t:'0–1 days after Strategy', a:'Order Month 1 of recurring work', lvl:'high', how:'Auto-generate recurring monthly work orders.' },
+    { t:'0–1 days after Strategy', a:'Send recap email: deck, recording, deliverable links, action items, next dates', r:'Templates', lvl:'partial', how:'AI-drafted recap from transcript; AM sends.' },
+    { t:'0–1 days after Strategy', a:'Set calendar time to prep first monthly review (1–2 hrs)', lvl:'high', how:'Auto-block calendar time.' },
+    { t:'0–1 days after Strategy', a:'Finalize roadmap & attach to ClickUp client details (weekly email sends it)', lvl:'high', how:'Auto-attach roadmap; the weekly client email is already automated.' },
+    { t:'1 wk prior to Month 1', a:'Ensure ClickUp Notetaker attends', lvl:'high', how:'Auto-added to the call.' },
+    { t:'1 wk prior to Month 1', a:'Prepare Monthly Review deck with data from GSC, GA, SEMrush', lvl:'partial', how:'Auto-pull GSC/GA/SEMrush into the monthly deck template; AM adds narrative.' },
+    { t:'1 wk prior to Month 1', a:'Block an hour after each review to order next month’s deliverables', lvl:'high', how:'Auto-block + auto-queue next month’s recurring tasks.' },
+    { t:'On the call', a:'Review dashboard / GSC / GA / SEMrush; pull relevant data', lvl:'partial', how:'Auto-refreshed dashboard ready before the call.' },
+    { t:'On the call', a:'Review month 1 deliverables; update deck due dates', lvl:'manual', how:'Human review with the client.' },
+    { t:'On the call', a:'Review Technical / Content / Internal Linking audits', lvl:'manual', how:'Human review; AI summaries assist.' },
+  ]},
+  { name:'Paid — LevelUp', meta:'After Strategy Call', steps:[
+    { t:'Day of Strategy Call', a:'Send Strategy recap + build; confirm specialist adjusted build for client review', lvl:'partial', how:'AI-drafted recap; build-ready status auto-notified in channel.' },
+    { t:'Day of Strategy Call', a:'Submit DAI ticket for conversion action changes (cc Paid specialist)', lvl:'high', how:'Auto-create the DAI ticket + cc specialist.' },
+    { t:'0–5 days after Strategy', a:'Client approves build; specialist launches ads (planner task)', lvl:'manual', how:'Client approval is manual; the launch task auto-appears in the specialist planner.' },
+    { t:'0–1 days after Launch', a:'Schedule month-1 check-in 30 days post-launch, quarterly after', lvl:'high', how:'Auto-schedule recurring check-ins from the launch date.' },
+    { t:'Ongoing', a:'Bump client on approvals; submit adjustment/new-campaign requests via specialist planner', lvl:'partial', how:'Auto-reminders for pending approvals; standardized request intake.' },
+    { t:'Ongoing', a:'Confirm monthly budgets no later than the 25th', lvl:'high', how:'Auto-reminder + budget-confirmation form on the 25th.' },
+  ]},
+  { name:'Paid — Accel', meta:'After Welcome Call', steps:[
+    { t:'0–1 days after WC', a:'Send Welcome Call recap + submit DAI ticket (cc Paid specialist)', lvl:'partial', how:'AI recap draft + auto DAI ticket creation.' },
+    { t:'1–2 days prior to Strategy', a:'Schedule internal pre-strategy sync (GAD, Carlos, Paid Specialist, Manager, Creative)', lvl:'high', how:'Auto-schedule the internal sync with the mapped roles.' },
+    { t:'0–1 days after Strategy', a:'Send Strategy recap; confirm build adjusted & ready for client review', lvl:'partial', how:'AI recap; build-ready auto-notify.' },
+    { t:'0–1 days after Strategy', a:'Schedule first monthly call + pre-call internal sync with Paid Specialist', lvl:'high', how:'Auto-scheduled.' },
+    { t:'Ongoing', a:'Bump client on approvals; submit requests via specialist planner', lvl:'partial', how:'Auto-reminders + standardized intake.' },
+    { t:'Ongoing', a:'Assign tasks in Paid Specialist planner for new initiatives / builds', lvl:'high', how:'Templated task creation.' },
+    { t:'Ongoing', a:'Confirm monthly budgets no later than the 25th', lvl:'high', how:'Auto-reminder + form.' },
+  ]},
+  { name:'Email', meta:'After Welcome Call', steps:[
+    { t:'Day of Welcome Call', a:'Order Email Audit & Strategy Call', lvl:'high', how:'Auto-create from SOW.' },
+    { t:'Day of WC', a:'Order Email Calendar', lvl:'high', how:'Auto-created task.' },
+    { t:'Day of WC', a:'Order ESP Migration (if applicable)', lvl:'high', how:'Auto-created when SOW flags a migration.' },
+    { t:'Day of WC', a:'Order ESP Setup (after migration if migrating)', lvl:'high', how:'Auto-created and sequenced after migration.' },
+    { t:'Day of WC', a:'Send invite for Email Strategy Call 1 wk after WC (GAD + Email Specialist)', lvl:'high', how:'Auto-scheduled.' },
+    { t:'Day of WC', a:'Send follow-up email recapping action items & next steps', lvl:'partial', how:'AI-drafted recap from transcript.' },
+    { t:'0–1 days after WC', a:'Log call notes into Clarity + update client details page', lvl:'high', how:'Notetaker transcript auto-synced to Clarity.' },
+    { t:'0–1 days after WC', a:'Set pre-call sync with Email Strategist + GAD to review deck', lvl:'high', how:'Auto-scheduled.' },
+    { t:'Pre-Strategy Sync', a:'Review client site; prepare to speak authoritatively on email suggestions', lvl:'manual', how:'Human prep; AI site/email audit pre-brief.' },
+    { t:'Day of Strategy Call', a:'Order List Import & Cleaning', lvl:'high', how:'Auto-created task.' },
+    { t:'Day of Strategy Call', a:'Order creation of Email Template', lvl:'high', how:'Auto-created.' },
+    { t:'Day of Strategy Call', a:'Order Email Form creation (x2)', lvl:'high', how:'Auto-created.' },
+    { t:'Day of Strategy Call', a:'Order first campaign from the campaign calendar', lvl:'high', how:'Auto-created.' },
+    { t:'Day of Strategy Call', a:'Order first Workflow', lvl:'high', how:'Auto-created.' },
+  ]},
+  { name:'CRO', meta:'After Welcome Call', steps:[
+    { t:'Day of Welcome Call', a:'Order CRO software onboarding task', lvl:'high', how:'Auto-created from SOW.' },
+    { t:'Day of WC', a:'Send invite for CRO interview (same call as IKA if they have SEO)', lvl:'high', how:'Auto-scheduled; merges with the SEO call when applicable.' },
+    { t:'Day of WC', a:'Send follow-up recap email', lvl:'partial', how:'AI-drafted recap.' },
+    { t:'0–1 days after WC', a:'Ensure a place for welcome call notes in channel', lvl:'high', how:'Auto-create notes doc + post link.' },
+    { t:'Once onboarding SW done', a:'Order CRO Audit', lvl:'high', how:'Auto-trigger when the onboarding software task completes.' },
+    { t:'0–1 days after CRO Interview', a:'Log notes in channel + update client details', lvl:'high', how:'Notetaker auto-sync.' },
+    { t:'0–1 days after CRO Interview', a:'Review scope & fill campaign roadmap', lvl:'partial', how:'Auto-draft roadmap from SOW.' },
+    { t:'Once CRO Audit done', a:'Send invite for CRO Audit Review call', lvl:'high', how:'Auto-scheduled on audit completion.' },
+    { t:'1–2 days before Audit Review', a:'Schedule internal meet with CRO Specialist ≥2 days prior', lvl:'high', how:'Auto-scheduled.' },
+    { t:'0–1 days after Audit Review', a:'Order CRO deliverables (A/B tests, template implementations, ad hoc hours)', lvl:'high', how:'Auto-created task bundle.' },
+  ]},
+  { name:'Transfer Client', meta:'Account handoff between AMs', steps:[
+    { t:'Pre-transfer', a:'Set up time to review account: previous AM → new AM', lvl:'high', how:'Auto-schedule the handoff meeting on the transfer trigger.' },
+    { t:'Pre-transfer', a:'Previous AM emails intro of new AM (cc GAD, or GAD sends if escalated)', lvl:'partial', how:'Templated intro email; AM personalizes.' },
+    { t:'Pre-transfer', a:'New AM reviews client website, folder, Corn', lvl:'manual', how:'Human review.' },
+    { t:'Pre-transfer', a:'Previous AM provides transfer notes, moved to SharePoint', r:'SharePoint', lvl:'partial', how:'Transfer-notes template auto-created in SharePoint.' },
+    { t:'Pre-transfer', a:'New AM reviews Clarity notes & details', lvl:'manual', how:'Human review; AI summary assists.' },
+    { t:'Pre-transfer', a:'Previous AM adds new AM to next client call (incl GAD)', lvl:'high', how:'Auto-add the new AM to upcoming call invites.' },
+    { t:'Post-transfer', a:'Previous AM reviews completed work with new AM', lvl:'manual', how:'Human handoff.' },
+    { t:'Post-transfer', a:'Previous AM reviews work to be ordered with new AM', lvl:'manual', how:'Human handoff.' },
+    { t:'Post-transfer', a:'New AM sends PMO request to transfer account; share ticket in channel', lvl:'high', how:'Auto-create the PMO transfer ticket + post the link.' },
+    { t:'Post-transfer', a:'New AM orders next month’s work', lvl:'high', how:'Auto-queue recurring work.' },
+    { t:'Post-transfer', a:'New AM schedules monthly / bi-weekly call with client', lvl:'high', how:'Auto-scheduled.' },
+    { t:'Post-transfer', a:'GAD checks in with client 1 month post-transfer', lvl:'high', how:'Auto-reminder to the GAD at +30 days.' },
+  ]},
+];
+
+function sopAllSteps() { return SOP_DATA.flatMap(s => s.steps); }
+
+function sopRender() {
+  // Stats
+  const all = sopAllSteps();
+  const high = all.filter(s => s.lvl === 'high').length;
+  const partial = all.filter(s => s.lvl === 'partial').length;
+  const manual = all.filter(s => s.lvl === 'manual').length;
+  const pct = Math.round(((high + partial) / all.length) * 100);
+  document.getElementById('sop-stats').innerHTML = `
+    <div class="sop-stat"><div class="n">${all.length}</div><div class="l">Total steps</div></div>
+    <div class="sop-stat high"><div class="n">${high}</div><div class="l">Fully automatable</div></div>
+    <div class="sop-stat partial"><div class="n">${partial}</div><div class="l">Assisted / templated</div></div>
+    <div class="sop-stat"><div class="n">${pct}%</div><div class="l">Touchable by automation</div></div>`;
+
+  // Themes
+  document.getElementById('sop-theme-grid').innerHTML = SOP_THEMES.map(t => `
+    <div class="sop-theme">
+      <div class="th-title"><span class="th-icon">${t.icon}</span>${t.title}</div>
+      <div class="th-desc">${t.desc}</div>
+      <span class="th-tag">${t.tag}</span>
+    </div>`).join('');
+
+  // Stages
+  document.getElementById('sop-stages').innerHTML = SOP_DATA.map((stage, i) => {
+    const h = stage.steps.filter(s => s.lvl === 'high').length;
+    const p = stage.steps.filter(s => s.lvl === 'partial').length;
+    const badges = [];
+    if (h) badges.push(`<span class="sop-mini-badge high">${h} auto</span>`);
+    if (p) badges.push(`<span class="sop-mini-badge partial">${p} assisted</span>`);
+    const rows = stage.steps.map(s => {
+      const label = { high:'Automatable', partial:'Assisted', manual:'Manual' }[s.lvl];
+      return `<div class="sop-step" data-lvl="${s.lvl}">
+        <div class="sop-step-auto"><span class="sop-step-badge ${s.lvl}">${label}</span></div>
+        <div class="sop-step-time">${esc(s.t)}</div>
+        <div class="sop-step-main">
+          <div class="sop-step-action">${esc(s.a)}</div>
+          ${s.lvl !== 'manual' ? `<div class="sop-step-how"><strong>How:</strong> ${esc(s.how)}</div>` : `<div class="sop-step-how" style="color:#9CA3AF"><strong>Note:</strong> ${esc(s.how)}</div>`}
+          ${s.r ? `<div class="sop-step-res">📎 ${esc(s.r)}</div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+    const openClass = i === 0 ? 'open' : '';
+    return `<div class="sop-stage ${openClass}" id="sop-stage-${i}">
+      <div class="sop-stage-head" onclick="sopToggleStage(${i})">
+        <div class="sop-stage-num">${i + 1}</div>
+        <div class="sop-stage-title">${esc(stage.name)}<div class="sop-stage-meta">${esc(stage.meta)} · ${stage.steps.length} steps</div></div>
+        <div class="sop-stage-badges">${badges.join('')}</div>
+        <span class="sop-stage-caret">▾</span>
+      </div>
+      <div class="sop-stage-body">${rows}</div>
+    </div>`;
+  }).join('');
+
+  sopApplyFilter();
+}
+
+function sopToggleStage(i) {
+  document.getElementById('sop-stage-' + i).classList.toggle('open');
+}
+
+function sopFilter(level, btn) {
+  sopCurrentFilter = level;
+  document.querySelectorAll('.sop-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  sopApplyFilter();
+}
+
+function sopApplyFilter() {
+  document.querySelectorAll('.sop-step').forEach(step => {
+    const show = sopCurrentFilter === 'all' || step.getAttribute('data-lvl') === sopCurrentFilter;
+    step.classList.toggle('hidden', !show);
+  });
+  // Auto-expand all stages when filtering so matches are visible
+  if (sopCurrentFilter !== 'all') {
+    document.querySelectorAll('.sop-stage').forEach(s => s.classList.add('open'));
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
