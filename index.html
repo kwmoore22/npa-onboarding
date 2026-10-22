@@ -415,6 +415,92 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .at-check-item { display: flex; align-items: center; gap: 9px; padding: 7px 12px; cursor: pointer; font-size: 13px; color: #374151; }
 .at-check-item:hover { background: #F9FAFB; }
 .at-check-item input { width: 15px; height: 15px; accent-color: #3B82F6; cursor: pointer; flex-shrink: 0; }
+
+/* ── ACCESS PROJECT ─────────────────────────────────────────────────────────── */
+#view-ap { display: none; padding: 24px 32px 60px; }
+.ap-wrap { max-width: 1120px; margin: 0 auto; }
+.ap-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+.ap-header h2 { font-size: 19px; font-weight: 800; color: #111; }
+.ap-header p { font-size: 13px; color: #6B7280; margin-top: 4px; max-width: 640px; }
+.ap-legend { display: flex; flex-wrap: wrap; gap: 10px 14px; max-width: 360px; }
+.ap-leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #4B5563; }
+.ap-leg .ad { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+/* status colors: coral=blocked, teal=done, blue=in-progress, gray=not-started, amber=to-confirm */
+.apc-blocked { background: #EF4444; }
+.apc-done { background: #10B981; }
+.apc-in-progress { background: #3B82F6; }
+.apc-not-started { background: #D1D5DB; border: 1.5px solid #9CA3AF; }
+.apc-to-confirm { background: #F59E0B; }
+
+.ap-stats { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.ap-stat { background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; padding: 14px 18px; flex: 1; min-width: 120px; border-top: 3px solid #E5E7EB; }
+.ap-stat .n { font-size: 26px; font-weight: 800; color: #111; font-variant-numeric: tabular-nums; }
+.ap-stat .l { font-size: 11px; color: #6B7280; text-transform: uppercase; letter-spacing: .4px; margin-top: 2px; }
+.ap-stat.done { border-top-color: #10B981; } .ap-stat.done .n { color: #059669; }
+.ap-stat.in-progress { border-top-color: #3B82F6; } .ap-stat.in-progress .n { color: #2563EB; }
+.ap-stat.blocked { border-top-color: #EF4444; } .ap-stat.blocked .n { color: #DC2626; }
+.ap-stat.to-confirm { border-top-color: #F59E0B; } .ap-stat.to-confirm .n { color: #D97706; }
+.ap-stat.not-started { border-top-color: #9CA3AF; } .ap-stat.not-started .n { color: #6B7280; }
+
+.ap-blockers { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 12px; padding: 18px 20px; margin-bottom: 24px; }
+.ap-blockers h3 { font-size: 14px; font-weight: 700; color: #B91C1C; margin-bottom: 12px; display: flex; align-items: center; gap: 7px; }
+.ap-blocker { display: flex; gap: 11px; padding: 9px 0; border-top: 1px solid #FCE2E2; }
+.ap-blocker:first-of-type { border-top: none; }
+.ap-blocker .bt { font-size: 13px; font-weight: 600; color: #991B1B; }
+.ap-blocker .bd { font-size: 12.5px; color: #7F1D1D; margin-top: 2px; line-height: 1.5; }
+.ap-blocker .bi { color: #EF4444; flex-shrink: 0; font-size: 15px; line-height: 1.3; }
+
+.ap-filter-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.ap-filter-btn { padding: 5px 13px; border-radius: 20px; border: 1px solid #E5E7EB; background: #fff; color: #4B5563; font-size: 12px; cursor: pointer; font-family: inherit; transition: all .12s; }
+.ap-filter-btn:hover { border-color: #3B82F6; color: #3B82F6; }
+.ap-filter-btn.active { background: #111827; border-color: #111827; color: #fff; }
+
+.ap-phase { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+.ap-phase-head { display: flex; align-items: center; gap: 12px; padding: 14px 18px; cursor: pointer; user-select: none; background: #F9FAFB; border-bottom: 1px solid #E5E7EB; }
+.ap-phase-head:hover { background: #F3F4F6; }
+.ap-phase-num { width: 30px; height: 26px; border-radius: 7px; background: #111827; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; letter-spacing: .02em; }
+.ap-phase-title { flex: 1; font-size: 14.5px; font-weight: 700; color: #111; }
+.ap-phase-meta { font-size: 11px; color: #9CA3AF; margin-top: 1px; font-weight: 400; }
+.ap-phase-dots { display: flex; gap: 3px; align-items: center; }
+.ap-phase-dots .d { width: 8px; height: 8px; border-radius: 50%; }
+.ap-phase-caret { color: #9CA3AF; font-size: 13px; transition: transform .2s; }
+.ap-phase.open .ap-phase-caret { transform: rotate(180deg); }
+.ap-phase-body { display: none; }
+.ap-phase.open .ap-phase-body { display: block; }
+
+.ap-step { display: grid; grid-template-columns: 50px 108px 1fr; gap: 14px; padding: 13px 18px; border-bottom: 1px solid #F3F4F6; align-items: start; }
+.ap-step:last-child { border-bottom: none; }
+.ap-step.hidden { display: none; }
+.ap-step.crit { background: #FFFBEB; }
+.ap-step-id { font-family: ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #6B7280; }
+.ap-step-id .crit-tag { display: block; font-size: 8.5px; font-weight: 800; color: #B45309; letter-spacing: .04em; margin-top: 3px; }
+.ap-badge { font-size: 10px; font-weight: 700; padding: 4px 9px; border-radius: 6px; white-space: nowrap; text-align: center; text-transform: uppercase; letter-spacing: .02em; border: 1px solid transparent; }
+.ap-badge.clk { cursor: pointer; } .ap-badge.clk:hover { filter: brightness(.96); box-shadow: 0 0 0 2px rgba(59,130,246,.25); }
+.ap-badge.blocked { background: #FEE2E2; color: #DC2626; border-color: #FCA5A5; }
+.ap-badge.done { background: #D1FAE5; color: #065F46; border-color: #6EE7B7; }
+.ap-badge.in-progress { background: #DBEAFE; color: #1D4ED8; border-color: #93C5FD; }
+.ap-badge.not-started { background: #F3F4F6; color: #6B7280; border-color: #D1D5DB; }
+.ap-badge.to-confirm { background: #FEF3C7; color: #92400E; border-color: #FCD34D; }
+.ap-step-main .at { font-size: 13px; color: #1F2937; line-height: 1.5; font-weight: 500; }
+.ap-step-main .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; }
+.ap-step-main .meta span { font-size: 11px; color: #6B7280; }
+.ap-step-main .meta b { color: #374151; font-weight: 600; }
+.ap-step-main .done-when { font-size: 11.5px; color: #059669; margin-top: 5px; }
+.ap-step-main .open-item { font-size: 11.5px; color: #B45309; margin-top: 5px; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 6px; padding: 5px 9px; }
+
+.ap-questions { margin-top: 24px; background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden; }
+.ap-q-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer; user-select: none; }
+.ap-q-head:hover { background: #F9FAFB; }
+.ap-q-head h3 { font-size: 14px; font-weight: 700; color: #111; display: flex; align-items: center; gap: 8px; }
+.ap-q-badge { font-size: 11px; font-weight: 700; background: #FEF3C7; color: #92400E; border-radius: 10px; padding: 1px 8px; }
+.ap-q-caret { color: #9CA3AF; font-size: 13px; transition: transform .2s; }
+.ap-questions.open .ap-q-caret { transform: rotate(180deg); }
+.ap-q-body { display: none; padding: 0 18px 10px; }
+.ap-questions.open .ap-q-body { display: block; }
+.ap-q { display: flex; gap: 12px; padding: 11px 0; border-top: 1px solid #F3F4F6; }
+.ap-q .qn { font-family: ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #D97706; flex-shrink: 0; }
+.ap-q .qt { font-size: 13px; color: #1F2937; }
+.ap-q .qw { font-size: 11.5px; color: #6B7280; margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -522,6 +608,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <button class="view-tab" id="tab-miro" onclick="switchTab('miro')">🗂 Miro Reference</button>
     <button class="view-tab" id="tab-access" onclick="switchTab('access')">🔑 Access Tracker</button>
     <button class="view-tab" id="tab-sop" onclick="switchTab('sop')">📋 Onboarding SOP</button>
+    <button class="view-tab" id="tab-ap" onclick="switchTab('ap')">🚦 Access Project</button>
   </div>
 
   <div id="view-board">
@@ -617,6 +704,43 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
       </div>
 
       <div id="sop-stages"></div>
+    </div>
+  </div>
+
+  <!-- ── ACCESS PROJECT VIEW ─────────────────────────────────────────────── -->
+  <div id="view-ap">
+    <div class="ap-wrap">
+      <div class="ap-header">
+        <div>
+          <h2>🚦 Access Project — Blubird Systems Test</h2>
+          <p>Closed Won → Welcome Call. Live mapping of the access pilot — 30 steps across 7 phases. <span id="ap-savenote" style="color:#9CA3AF"></span></p>
+        </div>
+        <div class="ap-legend" id="ap-legend"></div>
+      </div>
+
+      <div class="ap-stats" id="ap-stats"></div>
+
+      <div class="ap-blockers" id="ap-blockers"></div>
+
+      <div class="ap-filter-row">
+        <span class="filter-label" style="color:#6B7280">Show:</span>
+        <button class="ap-filter-btn active" onclick="apFilter('all',this)">All steps</button>
+        <button class="ap-filter-btn" onclick="apFilter('blocked',this)">Blockers</button>
+        <button class="ap-filter-btn" onclick="apFilter('in-progress',this)">In progress</button>
+        <button class="ap-filter-btn" onclick="apFilter('to-confirm',this)">Needs confirmation</button>
+        <button class="ap-filter-btn" onclick="apFilter('not-started',this)">Not started</button>
+        <button class="ap-filter-btn" onclick="apFilter('done',this)">Done</button>
+      </div>
+
+      <div id="ap-phases"></div>
+
+      <div class="ap-questions">
+        <div class="ap-q-head" onclick="apToggleQuestions()">
+          <h3>❓ Open questions for Kyle <span id="ap-q-count" class="ap-q-badge"></span></h3>
+          <span class="ap-q-caret" id="ap-q-caret">▾</span>
+        </div>
+        <div class="ap-q-body" id="ap-q-body"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -962,11 +1086,13 @@ function loadUserRole(uid) {
 function onAuthenticated() {
   showApp();
   loadUsers();
-  // Init access tracker
+  // Init access tracker + access project
   if (FIREBASE_ENABLED && db) {
     atInitFirebase();
+    apInitFirebase();
   } else {
     atInitLocal();
+    apInitLocal();
   }
   // Listen for board changes from all users
   boardRef.on('value', snap => {
@@ -1613,13 +1739,226 @@ function switchTab(name) {
   document.getElementById('view-miro').style.display   = name === 'miro'   ? 'block' : 'none';
   document.getElementById('view-access').style.display = name === 'access' ? 'block' : 'none';
   document.getElementById('view-sop').style.display    = name === 'sop'    ? 'block' : 'none';
+  document.getElementById('view-ap').style.display     = name === 'ap'     ? 'block' : 'none';
   document.getElementById('tab-board').classList.toggle('active',  name === 'board');
   document.getElementById('tab-miro').classList.toggle('active',   name === 'miro');
   document.getElementById('tab-access').classList.toggle('active', name === 'access');
   document.getElementById('tab-sop').classList.toggle('active',    name === 'sop');
+  document.getElementById('tab-ap').classList.toggle('active',     name === 'ap');
   document.querySelector('.toolbar').style.display = name === 'board' ? '' : 'none';
+  if (name === 'ap')     apRender();
   if (name === 'access') atRender();
   if (name === 'sop')    sopRender();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ACCESS PROJECT — Blubird Systems test tracker
+// Source: "Access Project Checklist and Linear Mapping Worksheet" (v0.1, 10/22/2026)
+// status: done · in-progress · blocked · to-confirm · not-started
+// Live statuses persist to Firebase /access_project as {stepId: status} overrides.
+// ═══════════════════════════════════════════════════════════════════════════
+const AP_STATUS_ORDER = ['not-started', 'to-confirm', 'in-progress', 'blocked', 'done'];
+const AP_STATUS_LABEL = { 'not-started':'Not started', 'to-confirm':'Needs confirm', 'in-progress':'In progress', 'blocked':'Blocker', 'done':'Done' };
+const AP_DB_PATH = '/access_project';
+
+let apCurrentFilter = 'all';
+let apOverrides = {};   // {stepId: status} from Firebase, overrides baseline
+let apDbRef = null;
+
+const AP_PHASES = [
+  { id:0, name:'Test Setup — Blubird Systems simulation', meta:'Stand up the test client' },
+  { id:1, name:'Salesforce Closed Won (trigger)', meta:'The one action that starts every automation' },
+  { id:2, name:'Staffing & internal build', meta:'24–48 hours after Closed Won' },
+  { id:3, name:'Initial onboarding email & portal invite', meta:'Hub-led, replacing the manual access email' },
+  { id:4, name:'Access delegation', meta:'GA4 + GSC critical path; rest in parallel' },
+  { id:5, name:'First-value trigger', meta:'Scope decision for this test' },
+  { id:6, name:'Welcome call', meta:'Resolve remaining access live' },
+];
+
+// Baseline from the worksheet. r=responsible, s=support, sys=system/tool, dw=done when, st=status, open=open item/blocker
+const AP_STEPS = [
+  { id:'0.1', p:0, a:'Set up Blubird Systems (Kyle’s former HubSpot site) as a net-new test client.', r:'Kyle', s:'Kim · Hub (Brian)', sys:'—', dw:'Test client agreed; site & contacts shared', st:'done' },
+  { id:'0.2', p:0, a:'Brief Sales & RevOps so the test deal stays out of live reporting.', r:'Kyle', s:'AE · RevOps · AM Leadership', sys:'Teams · Chili Piper · Salesforce', dw:'RevOps confirms the exclusions', st:'done', open:'Confirm the test opp is also excluded from revenue totals.' },
+  { id:'0.3', p:0, a:'Run the discovery/sales role play and create the test Opportunity.', r:'AE (Preston / Nick)', s:'Kyle', sys:'Salesforce · Chili Piper', dw:'Opportunity exists in Salesforce', st:'done', open:'Deal card: $203,489 value / $16,059 MRR; no real spend.' },
+  { id:'0.4', p:0, a:'Decide the client alias convention and domain for the test.', r:'Kyle', s:'Ops/PMO · Hub · Kim', sys:'Salesforce (Desired Client Alias)', dw:'One agreed alias & domain across all systems', st:'to-confirm', open:'Two domains in play (@npaccel vs @npdigital); domain not active on 10/22.' },
+
+  { id:'1.1', p:1, a:'AE enters client contact email + Desired Client Alias on the Opportunity (required before Closed Won).', r:'AE (Preston / Nick)', s:'Kyle · Ops/PMO', sys:'Salesforce', dw:'Alias & client email populated on the opp', st:'to-confirm', open:'Confirm kylem@blubirdsystems.com is on the opp (open Q to Brian).' },
+  { id:'1.2', p:1, a:'AE marks the Opportunity Closed Won — starts every downstream automation.', r:'AE (Preston / Nick)', s:'Kyle · RevOps', sys:'Salesforce', dw:'Opp stage = Closed Won', st:'blocked', open:'Closed 10/9 but shown Lost 10/16; Nick Byrne to restore so the Hub can import & verify SOW.' },
+  { id:'1.3', p:1, a:'Salesforce bot posts the “New Client Staffing Request” card to the staffing channel.', r:'Salesforce automation', s:'AM Leadership', sys:'Salesforce → Teams', dw:'Card posted', st:'done', open:'Posted 10/9. Confirm it re-fires when the opp is re-closed.' },
+  { id:'1.4', p:1, a:'Client alias auto-created as an Outlook group (shared-inbox) tied to a Teams channel.', r:'Flagler (Zach)', s:'Ops/PMO · Kim', sys:'Flagler automation · Outlook', dw:'Alias visible; members send/receive & see history', st:'blocked', open:'Group permissions escalated; ticket re-opened 10/19; Outlook visibility still being fixed 10/22.' },
+  { id:'1.5', p:1, a:'Create a Google account for each new client alias (needed for platform delegation).', r:'Flagler (Zach)', s:'Ops/PMO · Hub', sys:'Flagler ticket · Google Workspace', dw:'Google account exists for the alias', st:'blocked', open:'Zach asked for a separate ticket (10/22); confirm whether this gates OAuth.' },
+
+  { id:'2.1', p:2, a:'Assign AM, SEO & SEO Manager (+ Paid if sold) via the Assignment Link; update Assignments sheet.', r:'AM Leadership', s:'Kyle · Assigned AM · SEO', sys:'Salesforce staffing form', dw:'Team assigned and recorded', st:'done', open:'Client assignment worked per Kyle 10/19.' },
+  { id:'2.2', p:2, a:'Won Deal Alert creates the client site ticket; PMO submits Client Site Automation to Flagler.', r:'Ops/PMO (Sheyma / Destiny)', s:'Flagler (Zach)', sys:'Salesforce ticket · Flagler', dw:'Ticket closes after site is built & updated', st:'done' },
+  { id:'2.3', p:2, a:'Client site, Teams channel & ClickUp project created; team added to the site (mailbox + LastPass).', r:'Flagler · Ops/PMO', s:'Assigned AM · SEO', sys:'SharePoint · Teams · ClickUp', dw:'PG SharePoint Admin confirmation; members on site', st:'done', open:'Confirmed 10/15; verify every assigned member is on the site.' },
+  { id:'2.4', p:2, a:'Populate the ClickUp project with tasks from the SOW.', r:'Ops/PMO (Sheyma / Destiny)', s:'Kyle · SEO · Kim', sys:'ClickUp', dw:'SOW tasks visible in the project', st:'to-confirm', open:'Kim asked whether this belongs in an access-only test; owner not confirmed.' },
+  { id:'2.5', p:2, a:'Import the Opportunity into Campaign Hub (nightly pull); confirm record, products & SOW.', r:'Hub (Brian)', s:'Kyle · Kim', sys:'Campaign Hub · Salesforce', dw:'Blubird record in Hub with correct SOW', st:'in-progress', open:'Hub client page exists (10/20); cleanest once opp is Closed Won.' },
+  { id:'2.6', p:2, a:'Give assigned team access to the client alias credentials in LastPass.', r:'Ops/PMO (Sheyma / Destiny)', s:'Assigned AM · SEO · DAI/LBO/Email/PPC', sys:'LastPass', dw:'Every assigned member can open the credentials', st:'not-started', open:'Owner differs: Kim’s flow says PM team; SOP says Onboarding Specialist.' },
+
+  { id:'3.1', p:3, a:'AE sends the welcome email; assigned AM sends the AM intro/response email.', r:'AE · Assigned AM', s:'Kyle · AM Leadership', sys:'Outlook', dw:'Client has both emails', st:'done', open:'Kyle sent both for the test on 10/15.' },
+  { id:'3.2', p:3, a:'Access email: Onboarding Specialist sends per-platform directions from the Questionnaire.', r:'Ops/PMO (Sheyma / Destiny)', s:'Assigned AM', sys:'Email templates (SOPs sheet)', dw:'Client holds directions for each platform', st:'to-confirm', open:'Hub-guided flow meant to replace this. Decide: skip, keep as fallback, or run both.' },
+  { id:'3.3', p:3, a:'Rebuild & remap initial comms/triggers from Closed Won so the Hub drives onboarding.', r:'Hub (Brian)', s:'Kyle · Kim · Ops/PMO', sys:'Campaign Hub · Salesforce', dw:'Trigger map agreed; Hub comms fire on Closed Won', st:'in-progress', open:'Mapping mostly done (10/22); this worksheet can serve as the map.' },
+  { id:'3.4', p:3, a:'Client email added to the Hub portal; Hub notifies the client to sign up.', r:'Hub (Brian)', s:'Kyle', sys:'Campaign Hub', dw:'Client receives the portal sign-up link', st:'in-progress', open:'Test invite sent 10/20; confirm which address is the client login.' },
+  { id:'3.5', p:3, a:'Client logs in to the portal and completes the questionnaire (identifies platforms).', r:'Client (Kyle)', s:'Assigned AM · Hub', sys:'Campaign Hub', dw:'Questionnaire submitted; platform list generated', st:'not-started' },
+
+  { id:'4.1', p:4, a:'Portal platform-access page lists what to grant from SOW + questionnaire, and walks the client through it.', r:'Hub (Brian)', s:'Assigned AM · Ops/PMO', sys:'Campaign Hub', dw:'List matches Access Sheet 2.0 rows for products sold', st:'not-started', open:'Blubird is SEO/PPC with no spend; confirm whether Paid rows apply.' },
+  { id:'4.2', p:4, a:'Client delegates GA4 and GSC with 1-click OAuth to the NPD client email.', r:'Client (Kyle)', s:'Hub (Brian) · Assigned AM', sys:'GA4 Admin API · Search Console API', dw:'GA4 & GSC granted; unlocks first-value ordering', st:'not-started', crit:true, open:'Confirm Blubird has GA4 & GSC set up, and the OAuth app verification status / fallback.' },
+  { id:'4.3', p:4, a:'Client grants GTM, GBP, GMC, CMS (HubSpot) and ESP; Paid only if sold.', r:'Client (Kyle)', s:'Assigned AM · Ops/PMO · DAI/LBO/Email/PPC', sys:'Platform invites', dw:'Invites sent & accepted per Access Sheet 2.0', st:'not-started', open:'Coordinate client IT/SSO/MFA if needed; keep off the critical path.' },
+  { id:'4.4', p:4, a:'Update New Client Access Sheet 2.0 as each invite moves Not Sent → Sent → Accepted.', r:'Ops/PMO (Sheyma / Destiny)', s:'Assigned AM · Hub · Kyle', sys:'Access Sheet 2.0', dw:'Every row is current', st:'not-started', open:'Hub auto-update on a successful grant is planned, not built.' },
+  { id:'4.5', p:4, a:'Each assigned team accepts its invites (shared or individual logins) and tests the login.', r:'DAI / LBO / Email / PPC', s:'Ops/PMO · Assigned AM', sys:'All platforms', dw:'All statuses Accepted; login tested', st:'not-started' },
+  { id:'4.6', p:4, a:'Sign off “all access completed”: granted, stored in LastPass, team can open creds; log roadblocks.', r:'Ops/PMO (Sheyma / Destiny)', s:'Assigned AM · Kim · Kyle', sys:'LastPass · Access Sheet 2.0', dw:'Sign-off recorded; roadblocks listed', st:'not-started' },
+
+  { id:'5.1', p:5, a:'Confirmed access makes the Order function available for first-value deliverables; SEO places the order.', r:'SEO / SEO Mgr', s:'Hub · Kim · Assigned AM', sys:'Campaign Hub · ClickUp', dw:'SEO sees the Order action; first-value work starts', st:'to-confirm', open:'Kim: test access first, detailed onboarding later. Confirm this phase stays out of scope.' },
+
+  { id:'6.1', p:6, a:'Schedule the welcome call and prep access status, Hub data, deliverables, deck content.', r:'Assigned AM', s:'Ops/PMO · SEO · Kyle', sys:'Outlook/Teams · Hub · Access Sheet', dw:'Invite accepted; prep notes with a gap list', st:'not-started', open:'Decide whether an access specialist joins when gaps remain.' },
+  { id:'6.2', p:6, a:'Hold the welcome call and resolve any remaining access live.', r:'Assigned AM', s:'SEO · Ops/PMO · Kyle', sys:'Teams', dw:'Call held; outstanding items have owners & dates', st:'not-started' },
+  { id:'6.3', p:6, a:'Post-call: update Access Sheet & Hub, log roadblocks, enter manual client sentiment score.', r:'Assigned AM', s:'Kim · Hub · Kyle', sys:'Hub (Sentiment Tracker) · Access Sheet', dw:'Retro notes logged; sentiment scored', st:'not-started', open:'Sentiment scoring is manual for now.' },
+];
+
+const AP_BLOCKERS = [
+  { t:'Client alias & shared mailbox', d:'Outlook group permissions still being fixed by Flagler (10/22) and the domain was not yet active. Everything in Phases 3–4 needs this alias.' },
+  { t:'Opportunity status', d:'The Blubird opp closed 10/9 but later showed Lost (10/16). It needs to be Closed Won so the Hub imports it and the email/site automations fire. Flag to Finance so it isn’t counted as revenue.' },
+  { t:'Google accounts for client aliases', d:'Flagler asked for a separate ticket (10/22); this likely gates the GA4/GSC delegation step. Followed up 10/22.' },
+];
+
+const AP_QUESTIONS = [
+  { q:'Which domain and alias are canonical for Blubird?', w:'You requested @npaccel on 10/7; Brian & Kim used @npdigital on 10/16–10/19. Every system must match the opp.' },
+  { q:'Who restores the opportunity to Closed Won, and will that re-fire everything?', w:'Will the staffing card, Won Deal Alert, site automation & alias creation re-run, and is the test excluded from revenue?' },
+  { q:'What is the scope of this test?', w:'Kim’s access-only direction vs your 10/15 plan (Order function, ClickUp from SOW, new content deliverable). Park Phase 5 & step 2.4?' },
+  { q:'Does Blubird actually have GA4 and GSC, and what is the CMS?', w:'Site is on HubSpot. OAuth only works if those properties exist and the client login owns them.' },
+  { q:'Does OAuth delegation depend on the alias having a Google account?', w:'If Flagler’s Google-account ticket gates step 4.2, it becomes a critical-path blocker.' },
+  { q:'Is the Google OAuth app verified for GA4/GSC scopes, and is a manual-invite fallback acceptable?', w:'Verification for sensitive scopes can take weeks; the fallback decides whether the test finishes on schedule.' },
+  { q:'Who owns LastPass & Access Sheet updates until the Hub automates them?', w:'Kim’s flow says PM team; the SOP says Onboarding Specialist. Is Destiny Martin the Onboarding Specialist today?' },
+  { q:'Do the Paid rows apply?', w:'The deal is SEO/PPC but has no real spend. N/A, or test the PPC invites?' },
+  { q:'Are the Access Sheet 2.0 template emails right?', w:'LBO shows seo@digitalagency.com while others use @npaccel. Is the sheet retired once the Hub tracks statuses?' },
+  { q:'What happens to the manual access email?', w:'Skip it, keep it as a fallback, or run both for the test (step 3.2).' },
+  { q:'Welcome call: date, attendees and deck?', w:'Who joins from AM & SEO, does an access specialist attend when gaps remain, and which deck is used.' },
+  { q:'Confirm roles and target dates.', w:'Titles for Destiny, Lindsey, Skyler, Jake, Hailey, Christine, Traci and Zach/Flagler, plus target dates and what “done” means.' },
+];
+
+function apStatusOf(step) {
+  return apOverrides[step.id] || step.st;
+}
+
+function apRender() {
+  const canEdit = perms && perms().canManage;
+  document.getElementById('ap-savenote').textContent = canEdit
+    ? 'Click any status to update it — changes sync to the team live.'
+    : 'Statuses reflect the latest team update.';
+
+  // Legend
+  document.getElementById('ap-legend').innerHTML = AP_STATUS_ORDER.slice().reverse().map(s =>
+    `<span class="ap-leg"><span class="ad apc-${s}"></span>${AP_STATUS_LABEL[s]}</span>`).join('');
+
+  // Stats
+  const counts = { done:0, 'in-progress':0, blocked:0, 'to-confirm':0, 'not-started':0 };
+  AP_STEPS.forEach(s => counts[apStatusOf(s)]++);
+  document.getElementById('ap-stats').innerHTML = `
+    <div class="ap-stat done"><div class="n">${counts.done}</div><div class="l">Done</div></div>
+    <div class="ap-stat in-progress"><div class="n">${counts['in-progress']}</div><div class="l">In progress</div></div>
+    <div class="ap-stat blocked"><div class="n">${counts.blocked}</div><div class="l">Blockers</div></div>
+    <div class="ap-stat to-confirm"><div class="n">${counts['to-confirm']}</div><div class="l">Needs confirm</div></div>
+    <div class="ap-stat not-started"><div class="n">${counts['not-started']}</div><div class="l">Not started</div></div>`;
+
+  // Blockers callout
+  document.getElementById('ap-blockers').innerHTML =
+    `<h3>🔴 What's holding the test up right now</h3>` +
+    AP_BLOCKERS.map(b => `<div class="ap-blocker"><span class="bi">▸</span><div><div class="bt">${esc(b.t)}</div><div class="bd">${esc(b.d)}</div></div></div>`).join('');
+
+  // Phases + steps
+  document.getElementById('ap-phases').innerHTML = AP_PHASES.map(ph => {
+    const steps = AP_STEPS.filter(s => s.p === ph.id);
+    const dots = steps.map(s => `<span class="d apc-${apStatusOf(s)}"></span>`).join('');
+    const rows = steps.map(s => {
+      const st = apStatusOf(s);
+      const badge = `<div class="ap-badge ${st} ${canEdit ? 'clk' : ''}" ${canEdit ? `onclick="apCycle('${s.id}')" title="Click to change"` : ''}>${AP_STATUS_LABEL[st]}</div>`;
+      return `<div class="ap-step ${s.crit ? 'crit' : ''}" data-status="${st}">
+        <div class="ap-step-id">${s.id}${s.crit ? '<span class="crit-tag">CRITICAL</span>' : ''}</div>
+        ${badge}
+        <div class="ap-step-main">
+          <div class="at">${esc(s.a)}</div>
+          <div class="meta"><span><b>Responsible:</b> ${esc(s.r)}</span>${s.s ? `<span><b>Support:</b> ${esc(s.s)}</span>` : ''}${s.sys && s.sys !== '—' ? `<span><b>System:</b> ${esc(s.sys)}</span>` : ''}</div>
+          <div class="done-when">✓ Done when: ${esc(s.dw)}</div>
+          ${s.open ? `<div class="open-item">⚠ ${esc(s.open)}</div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+    const openClass = (ph.id <= 4) ? 'open' : '';
+    return `<div class="ap-phase ${openClass}" id="ap-phase-${ph.id}">
+      <div class="ap-phase-head" onclick="apTogglePhase(${ph.id})">
+        <div class="ap-phase-num">P${ph.id}</div>
+        <div class="ap-phase-title">${esc(ph.name)}<div class="ap-phase-meta">${esc(ph.meta)} · ${steps.length} steps</div></div>
+        <div class="ap-phase-dots">${dots}</div>
+        <span class="ap-phase-caret">▾</span>
+      </div>
+      <div class="ap-phase-body">${rows}</div>
+    </div>`;
+  }).join('');
+
+  // Open questions
+  document.getElementById('ap-q-count').textContent = AP_QUESTIONS.length;
+  document.getElementById('ap-q-body').innerHTML = AP_QUESTIONS.map((q, i) =>
+    `<div class="ap-q"><span class="qn">Q${i + 1}</span><div><div class="qt">${esc(q.q)}</div><div class="qw">${esc(q.w)}</div></div></div>`).join('');
+
+  apApplyFilter();
+}
+
+function apCycle(stepId) {
+  if (!perms().canManage) return;
+  const step = AP_STEPS.find(s => s.id === stepId);
+  const cur = apStatusOf(step);
+  const next = AP_STATUS_ORDER[(AP_STATUS_ORDER.indexOf(cur) + 1) % AP_STATUS_ORDER.length];
+  apOverrides[stepId] = next;
+  apSave();
+  apRender();
+  toast('Step ' + stepId + ' → ' + AP_STATUS_LABEL[next]);
+}
+
+function apSave() {
+  if (FIREBASE_ENABLED && apDbRef) {
+    apDbRef.set(apOverrides);
+  } else {
+    localStorage.setItem('npa_access_project', JSON.stringify(apOverrides));
+  }
+}
+
+function apTogglePhase(id) {
+  document.getElementById('ap-phase-' + id).classList.toggle('open');
+}
+
+function apToggleQuestions() {
+  document.querySelector('.ap-questions').classList.toggle('open');
+}
+
+function apFilter(status, btn) {
+  apCurrentFilter = status;
+  document.querySelectorAll('.ap-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  apApplyFilter();
+}
+
+function apApplyFilter() {
+  document.querySelectorAll('.ap-step').forEach(step => {
+    const show = apCurrentFilter === 'all' || step.getAttribute('data-status') === apCurrentFilter;
+    step.classList.toggle('hidden', !show);
+  });
+  if (apCurrentFilter !== 'all') {
+    document.querySelectorAll('.ap-phase').forEach(p => p.classList.add('open'));
+  }
+}
+
+function apInitFirebase() {
+  if (!FIREBASE_ENABLED || !window.firebase) return;
+  apDbRef = firebase.database().ref(AP_DB_PATH);
+  apDbRef.on('value', snap => {
+    apOverrides = snap.val() || {};
+    if (document.getElementById('view-ap').style.display !== 'none') apRender();
+  });
+}
+
+function apInitLocal() {
+  const saved = localStorage.getItem('npa_access_project');
+  apOverrides = saved ? JSON.parse(saved) : {};
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
