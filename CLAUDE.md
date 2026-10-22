@@ -28,7 +28,7 @@ Two deployed pages:
 
 ### `index.html` — team dashboard
 
-Four tabs, switched by `switchTab(name)`:
+Five tabs, switched by `switchTab(name)`:
 
 1. **Onboarding Board** — data-driven swimlane board (SEO / Paid / Email) with
    phases, cards, drag-and-drop, inline editing, RACI, links, notes, and status.
@@ -44,6 +44,12 @@ Four tabs, switched by `switchTab(name)`:
    checklist (`SOP_DATA`, 7 stages) with each step rated `high` / `partial` /
    `manual` for automation potential, plus automation-opportunity themes
    (`SOP_THEMES`). Analysis-only; no persistence.
+5. **Access Project** (`apRender`, `ap*` functions) — live tracker for the
+   Blubird Systems access pilot (`AP_STEPS`/`AP_PHASES`, 30 steps across 7
+   phases, Closed Won → Welcome Call). Baseline status per step; managers click a
+   status badge to cycle it. Status overrides persist at Firebase
+   `/access_project` as `{stepId: status}` and sync live. Statuses:
+   `done` / `in-progress` / `blocked` / `to-confirm` / `not-started`.
 
 **Permission model** (`ROLES`): viewer / editor / manager / admin. Enforced
 client-side (UI gated on `perms()`), with Realtime Database rules as backstop.
